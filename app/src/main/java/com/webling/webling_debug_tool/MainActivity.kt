@@ -19,16 +19,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {   // 마시멜로우 이상일 경우
-            if (!Settings.canDrawOverlays(this)) {              // 체크
-                val intent: Intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
-                ActivityCompat.startActivityForResult(this, intent, 9999, null)
-            } else {
-                LogManager(this).startService()
-            }
+        // 마시멜로우 이상일 경우
+        if (!Settings.canDrawOverlays(this)) {              // 체크
+            val intent: Intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            ActivityCompat.startActivityForResult(this, intent, 9999, null)
         } else {
             LogManager(this).startService()
         }

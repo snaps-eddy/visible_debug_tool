@@ -2,4 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.weblinglibrary">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application>
+        <service
+            android:name="com.webling.debuglibrary.presentation.ui.OverlayDebugToolPopUp"
+            android:exported="false" />
+    </application>
+
+
 </manifest>

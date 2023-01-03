@@ -1,4 +1,4 @@
-package com.example.weblinglibrary
+package com.webling.debuglibrary
 
 import org.junit.Test
 

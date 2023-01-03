@@ -15,7 +15,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final'
-                version = '0.0.1'
+                version = '0.0.14'
             }
             // Creates a Maven publication called “debug”.
             debug(MavenPublication) {
@@ -24,18 +24,18 @@ afterEvaluate {
 
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final-debug'
-                version = '0.0.1'
+                version = '0.0.14'
             }
         }
     }
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         minSdk 23
-        targetSdk 31
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -59,7 +59,11 @@ android {
 }
 
 dependencies {
+    def lifecycle_version = "2.5.1"
 
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
+
+    
     implementation 'androidx.core:core-ktx:1.7.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'

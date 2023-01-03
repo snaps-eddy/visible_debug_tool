@@ -1,4 +1,4 @@
-package com.example.weblinglibrary.log
+package com.webling.debuglibrary.domain.log
 
 sealed interface LogState {
 

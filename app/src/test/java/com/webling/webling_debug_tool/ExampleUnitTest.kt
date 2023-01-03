@@ -1,4 +1,4 @@
-package com.example.webling_debug_tool
+package com.webling.webling_debug_tool
 
 import org.junit.Test
 

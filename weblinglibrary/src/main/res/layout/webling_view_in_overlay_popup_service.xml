@@ -1,39 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#66000000"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <ImageButton
         android:id="@+id/btn_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/webling_ic_baseline_menu_24"
         android:text="click"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        app:layout_constraintEnd_toStartOf="@+id/tv_log"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
-        android:id="@+id/btn_log"
+        android:id="@+id/tv_log"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="15dp"
-        android:textAlignment="center"
-        android:textSize="20dp"
+        android:layout_marginTop="16dp"
         android:text="LOG"
-        android:textColor="@android:color/black" />
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_close"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_menu"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btn_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
-        android:layout_marginTop="13dp"
-        android:layout_marginLeft="3dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tv_log"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+    <View
+        android:id="@+id/view"
+        android:layout_width="406dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_log" />
+
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:id="@+id/sv_logs"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:maxHeight="300dp"-->
+<!--        app:layout_constraintHeight_max="300dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/view">-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/addView_container"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
+<!--        </LinearLayout>-->
+
+<!--    </androidx.core.widget.NestedScrollView>-->
+
+    <com.airbnb.epoxy.EpoxyRecyclerView
+        android:id="@+id/rv_logs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="300dp"
+        app:layout_constraintHeight_max="300dp"
+        android:layout_marginTop="10dp"
+        android:overScrollMode="never"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

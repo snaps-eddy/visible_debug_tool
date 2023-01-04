@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:viewBindingIgnore="true"
+    tools:ignore="ResourceName">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.webling.debuglibrary.presentation.log.LogUiModel" />
+
+        <!--        <variable-->
+        <!--            name="onClickItem"-->
+        <!--            type="android.view.View.OnClickListener" />-->
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{model.content}"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/epoxy_title"
+            app:layout_constraintTop_toBottomOf="@+id/epoxy_title"
+            tools:text="Epoxy Test" />
+
+    </LinearLayout>
+</layout>

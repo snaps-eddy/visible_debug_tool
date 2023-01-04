@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
+    id 'kotlin-kapt'
 }
 
 afterEvaluate {
@@ -15,7 +16,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final'
-                version = '0.0.14'
+                version = '0.0.16'
             }
             // Creates a Maven publication called “debug”.
             debug(MavenPublication) {
@@ -24,18 +25,18 @@ afterEvaluate {
 
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final-debug'
-                version = '0.0.14'
+                version = '0.0.16'
             }
         }
     }
 }
 
 android {
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
         minSdk 23
-        targetSdk 33
+        targetSdk 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -54,15 +55,33 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+//    resourcePrefix 'webling_'
+}
 
-    resourcePrefix 'webling_'
+kapt {
+    correctErrorTypes true
 }
 
 dependencies {
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     def lifecycle_version = "2.5.1"
+    def flow_version = "1.4.2"
+    def epoxy_version = "4.4.0"
 
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$flow_version"
+
+    implementation "com.airbnb.android:epoxy:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-glide-preloading:$epoxy_version"
+    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
     
     implementation 'androidx.core:core-ktx:1.7.0'
     testImplementation 'junit:junit:4.13.2'

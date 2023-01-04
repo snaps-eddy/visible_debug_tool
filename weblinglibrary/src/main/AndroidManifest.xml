@@ -6,10 +6,9 @@
 
     <application>
         <service
-            android:name="com.webling.debuglibrary.presentation.ui.OverlayDebugToolPopUp"
-            android:exported="true"
+            android:name="com.webling.debuglibrary.presentation.ui.OverlayDebugToolPopUpService"
             android:enabled="true"
-            />
+            android:exported="true" />
     </application>
 
 

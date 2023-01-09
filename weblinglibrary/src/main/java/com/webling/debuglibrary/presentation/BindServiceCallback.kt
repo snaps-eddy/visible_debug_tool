@@ -1,6 +1,6 @@
 package com.webling.debuglibrary.presentation
 
-interface BindServiceCallback {
+internal interface BindServiceCallback {
 
     fun onUnbindService()
 

@@ -1,4 +1,4 @@
-package com.webling.debuglibrary.presentation.ui
+package com.webling.debuglibrary.presentation.view.ui
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner

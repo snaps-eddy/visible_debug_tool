@@ -4,6 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="com.webling.webling_debug_tool.MainActivity">
 
+    <TextView
+        android:id="@+id/textlknlk"
+        android:layout_width="366dp"
+        android:layout_height="627dp"
+        android:text="TextView \n sdfdsf \n sdfsdf \n sdfsdf \n sdfsdf \n sdfsdf \n sdfsdf \n sdf sdfs\n sdf sdfsd f\n sdf sdf s\n sdf sdf\n sdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsfsfadzdf\nzsdf"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

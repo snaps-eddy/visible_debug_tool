@@ -49,6 +49,8 @@
             android:layout_height="30dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="2dp"
             android:layout_alignParentRight="true"
             android:visibility="gone"
             android:clickable="true"
@@ -79,16 +81,17 @@
             android:layout_toLeftOf="@+id/iv_move"
             android:visibility="gone" />
 
+        <Spinner
+            android:id="@+id/sp_log"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/tv_log"
+            android:clickable="true"
+            android:visibility="gone"
+            />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/iv_move"-->
-<!--            android:layout_width="30dp"-->
-<!--            android:layout_height="30dp"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:layout_toLeftOf="@+id/iv_move"-->
-<!--            android:clickable="true"-->
-<!--            android:src="@drawable/move" />-->
 
     </RelativeLayout>
 

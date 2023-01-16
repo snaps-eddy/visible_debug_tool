@@ -8,40 +8,32 @@ import android.graphics.PixelFormat
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import android.view.*
-import android.widget.CheckBox
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.core.view.children
+import android.widget.*
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.airbnb.epoxy.EpoxyRecyclerView
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.weblinglibrary.R
-import com.example.weblinglibrary.logItemView
 import com.webling.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.webling.debuglibrary.presentation.BindServiceCallback
-import com.webling.debuglibrary.presentation.model.log.LogUiModel
-import com.webling.debuglibrary.presentation.presenter.OverlayTaskContract
-import com.webling.debuglibrary.presentation.presenter.OverlayTaskPresenter
+import com.webling.debuglibrary.presentation.viewmodel.OverlayContract
+import com.webling.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
 import kotlinx.coroutines.*
 
 @SuppressLint("ClickableViewAccessibility")
-class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
-
-    private lateinit var presenter: OverlayTaskContract.Presenter
+class OverlayTaskService : LifecycleService() {
 
     inner class OverlayDebugToolPopUpBinder : Binder() {
         fun getService(): OverlayTaskService {
             return this@OverlayTaskService
         }
     }
+
+    private val viewModel: OverlayTaskViewModel = OverlayTaskViewModel(GetLogcatUseCase())
 
     private val binder = OverlayDebugToolPopUpBinder()
 
@@ -70,13 +62,14 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
     private val windowManager: WindowManager by lazy { getSystemService(WINDOW_SERVICE) as WindowManager }
     private val inflate: LayoutInflater by lazy { getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
     private val rootView: RelativeLayout by lazy { inflate.inflate(R.layout.webling_view_in_overlay_popup, null) as RelativeLayout }
-    private val headerLayout: RelativeLayout by lazy { rootView.children.first() as RelativeLayout }
-    private val rvLog: EpoxyRecyclerView by lazy { rootView.findViewById(R.id.rv_logs) }
+    private val svLog: NestedScrollView by lazy { rootView.findViewById(R.id.sv_logs) }
+    private val logContainer: LinearLayout by lazy { rootView.findViewById(R.id.log_view_container) }
     private val ivMove: ImageView by lazy { rootView.findViewById(R.id.iv_move) }
     private val btnMenu: ImageButton by lazy { rootView.findViewById(R.id.btn_menu) }
     private val tvLog: TextView by lazy { rootView.findViewById(R.id.tv_log) }
     private val ivClose: ImageView by lazy { rootView.findViewById(R.id.iv_close) }
     private val cbZoom: CheckBox by lazy { rootView.findViewById(R.id.cb_zoom) }
+    private val spLog: Spinner by lazy { rootView.findViewById(R.id.sp_log) }
 
     private var touchX = 0
     private var touchY = 0
@@ -86,9 +79,7 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
     private val screenRatio = 3
     private val screenFullRatio = 1.5
 
-    private lateinit var myJob: Job
-
-    private val touchListener = View.OnTouchListener { v, event ->
+    private val viewMoveListener = View.OnTouchListener { _, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 touchX = event.rawX.toInt()
@@ -107,10 +98,38 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
         return@OnTouchListener false
     }
 
+    private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            tvLog.text = logEvents[position]
+            viewModel.requestLogcats(logEvents[position])
+            logContainer.removeAllViews()
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+    }
+
+    val logEvents = listOf("All", "API", "WEB_VIEW", "DATA", "eddy white", "eddy gege")
+
+    private var isScrollBottom = false
+
     override fun onCreate() {
         super.onCreate()
 
-        presenter = OverlayTaskPresenter(GetLogcatUseCase(), this)
+        initObservers()
+
+        svLog.viewTreeObserver.addOnGlobalLayoutListener {
+            svLog.post {
+                if(isScrollBottom) {
+                    svLog.fullScroll(ScrollView.FOCUS_DOWN)
+                }
+            }
+        }
+        svLog.setOnScrollChangeListener { _, _, _, _, _ ->
+            isScrollBottom = !svLog.canScrollVertically(1)
+        }
+
         windowManager.addView(rootView, rootViewParams)
     }
 
@@ -121,14 +140,8 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
     }
 
     private fun bindView(intent: Intent) {
-        rvLog.apply {
-            layoutManager = LinearLayoutManager(context).apply {
-                orientation = LinearLayoutManager.VERTICAL
-            }
-        }
 
         btnMenu.setOnClickListener {
-            presenter.getLogData("eddy white")
         }
 
         rootView.setOnLongClickListener {
@@ -137,29 +150,26 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
         }
 
         tvLog.setOnClickListener {
-            resizeView()
-            rvLog.updateLayoutParams {
-                width = Resources.getSystem().displayMetrics.widthPixels
-                height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
-            }
-
-            presenter.getLogData("eddy gege")
+            viewModel.setEvent(OverlayContract.Event.OnTagItemClick())
         }
 
-        ivMove.setOnTouchListener(touchListener)
+        ivMove.setOnTouchListener(viewMoveListener)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, logEvents)
+        spLog.adapter = adapter
+        spLog.onItemSelectedListener = logSelectorListener
 
         ivClose.setOnClickListener {
-            restorationView()
+            viewModel.setEvent(OverlayContract.Event.OnCloseClick)
         }
 
         cbZoom.setOnClickListener {
-            if(cbZoom.isChecked) {
-                rvLog.updateLayoutParams {
+            if (cbZoom.isChecked) {
+                svLog.updateLayoutParams {
                     width = Resources.getSystem().displayMetrics.widthPixels
                     height = ((Resources.getSystem().displayMetrics.heightPixels / screenFullRatio).toInt())
                 }
-            }else {
-                rvLog.updateLayoutParams {
+            } else {
+                svLog.updateLayoutParams {
                     width = Resources.getSystem().displayMetrics.widthPixels
                     height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
                 }
@@ -168,94 +178,81 @@ class OverlayTaskService : LifecycleService(), OverlayTaskContract.OverlayView {
 
     }
 
-    private fun cancelJob() {
-        if (this::myJob.isInitialized) {
-            myJob.cancel()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        rvLog.adapter = null
-        windowManager.removeView(rootView)
-    }
-
-    var isScrollBottom = false
-    override fun setLogData(uiModels: List<LogUiModel>) {
-        cancelJob()
+    private fun initObservers() {
         lifecycleScope.launch {
-            withContext(Dispatchers.Main) {
-                rvLog.withModels {
-                    uiModels.forEachIndexed { index, logUiModel ->
-                        logItemView {
-                            id(index)
-                            model(logUiModel)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    when (val state = it.logsState) {
+                        OverlayContract.LogsState.Idle -> {
+                            restorationView()
+                        }
+                        OverlayContract.LogsState.Loading -> {
+
+                        }
+
+                        is OverlayContract.LogsState.Success -> {
+                            resizeView()
+                            svLog.updateLayoutParams {
+                                width = Resources.getSystem().displayMetrics.widthPixels
+                                height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect {
+                    when (it) {
+                        is OverlayContract.SideEffect.FetchLogs -> {
+                            val logContentView = createLogTextView(it.log.content)
+                            logContainer.addView(logContentView)
                         }
                     }
                 }
             }
-            if (isScrollBottom) {
-                rvLog.smoothScrollToPosition(uiModels.size - 1)
-            }
-        }
-        rvLog.setOnScrollChangeListener { view, i, i2, i3, i4 ->
-            isScrollBottom = !rvLog.canScrollVertically(1)
-        }
-    }
-
-    private fun addView() {
-        ImageButton(this).apply {
-
         }
     }
 
     private fun restorationView() {
         ivClose.isVisible = false
-        rvLog.isVisible = false
+        spLog.isVisible = false
+        svLog.isVisible = false
         cbZoom.isVisible = false
         cbZoom.isChecked = true
+        tvLog.text = "All"
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.LEFT_OF)
         moveLayoutParams.addRule(RelativeLayout.RIGHT_OF, tvLog.id)
         ivMove.layoutParams = moveLayoutParams
 
-
-//        val headerLayout2: LinearLayout by lazy { rootView.children.find { it.id == R.id.rv_layout } as LinearLayout }
-//        headerLayout2.removeAllViews()
-
-        presenter.deInit()
-
         windowManager.updateViewLayout(rootView, rootViewParams)
     }
 
     private fun resizeView() {
         ivClose.isVisible = true
-        rvLog.isVisible = true
+        spLog.isVisible = true
+        svLog.isVisible = true
         cbZoom.isVisible = true
         cbZoom.isChecked = false
+
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.RIGHT_OF)
         moveLayoutParams.addRule(RelativeLayout.LEFT_OF, ivClose.id)
         ivMove.layoutParams = moveLayoutParams
-
-
-//        val width = (Resources.getSystem().displayMetrics.density * 43).toInt()
-//        val height = (Resources.getSystem().displayMetrics.density * 43).toInt()
-//
-//        ImageView(this).apply {
-//            val params = RelativeLayout.LayoutParams(width, height)
-//            params.addRule(RelativeLayout.LEFT_OF, ivMove.id)
-//            setImageResource(R.drawable.move)
-//            tag = "btn_move"
-//            layoutParams = params
-//        }.run { headerLayout.addView(this) }
-
     }
 
-    internal fun setUnBindServiceCallback(callback: BindServiceCallback) {
-        this.unBindCallback = callback
-    }
+    private fun createLogTextView(log: String) = TextView(this@OverlayTaskService).apply { text = log }
 
+    internal fun setUnBindServiceCallback(callback: BindServiceCallback) { this.unBindCallback = callback }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        windowManager.removeView(rootView)
+    }
 }

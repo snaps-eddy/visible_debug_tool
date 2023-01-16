@@ -49,6 +49,8 @@
             android:layout_height="30dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="2dp"
             android:layout_alignParentRight="true"
             android:visibility="gone"
             android:clickable="true"
@@ -79,28 +81,31 @@
             android:layout_toLeftOf="@+id/iv_move"
             android:visibility="gone" />
 
+        <Spinner
+            android:id="@+id/sp_log"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/tv_log"
+            android:clickable="true"
+            android:visibility="gone"
+            />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/iv_move"-->
-<!--            android:layout_width="30dp"-->
-<!--            android:layout_height="30dp"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:layout_toLeftOf="@+id/iv_move"-->
-<!--            android:clickable="true"-->
-<!--            android:src="@drawable/move" />-->
 
     </RelativeLayout>
 
+
     <LinearLayout
-        android:id="@+id/rv_layout"
+        android:id="@+id/sv_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="@color/transparent_gray"
         android:layout_below="@id/rl_header">
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/rv_logs"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/sv_logs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -110,7 +115,30 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="300dp"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" >
+
+            <LinearLayout
+                android:id="@+id/log_view_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+<!--        <com.airbnb.epoxy.EpoxyRecyclerView-->
+<!--            android:id="@+id/rv_logs"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:maxHeight="300dp"-->
+<!--            android:overScrollMode="never"-->
+<!--            android:scrollbars="vertical"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHeight_max="300dp"-->
+<!--            app:layout_constraintHorizontal_bias="0.0"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
     </LinearLayout>
 
 </RelativeLayout>

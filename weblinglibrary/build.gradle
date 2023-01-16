@@ -16,7 +16,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final'
-                version = '0.0.16'
+                version = '0.0.18'
             }
             // Creates a Maven publication called “debug”.
             debug(MavenPublication) {
@@ -25,7 +25,7 @@ afterEvaluate {
 
                 groupId = 'com.webling.DebugLibrary'
                 artifactId = 'final-debug'
-                version = '0.0.16'
+                version = '0.0.18'
             }
         }
     }
@@ -70,11 +70,12 @@ dependencies {
     def lifecycle_version = "2.5.1"
     def flow_version = "1.4.2"
     def epoxy_version = "4.4.0"
+    def scope_version = "2.5.1"
 
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$flow_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$scope_version"
 
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"

@@ -11,7 +11,6 @@ class GetLogcatUseCase : UseCase<String, String> {
     override fun invoke(params: String): Flow<String> {
         return logcatCollector.collect(params)
             .map {
-                var line: String
                 buildString {
                     when {
                         it.contains(params) -> {

@@ -9,7 +9,7 @@ class OverlayContract {
 
     sealed interface Event : UiEvent {
         object OnCloseClick: Event
-        data class OnTagItemClick(val tag: String = "") : Event
+        data class OnClickTagItem(val tag: String = "") : Event
     }
 
     data class State(

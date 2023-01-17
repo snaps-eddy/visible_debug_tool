@@ -43,7 +43,7 @@ class OverlayTaskViewModel(
             is OverlayContract.Event.OnCloseClick -> {
                 setState { copy(logsState = OverlayContract.LogsState.Idle) }
             }
-            is OverlayContract.Event.OnTagItemClick -> {
+            is OverlayContract.Event.OnClickTagItem -> {
                 requestLogcats(event.tag)
             }
         }

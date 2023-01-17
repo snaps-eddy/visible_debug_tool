@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 sdf.bindService()
                 sdf.onLogCollect()
                 sdf.onUnbindService()
+                sdf.
             }
         }
     }

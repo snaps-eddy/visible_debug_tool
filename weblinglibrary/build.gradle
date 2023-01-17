@@ -68,19 +68,12 @@ kapt {
 
 dependencies {
     def lifecycle_version = "2.5.1"
-    def flow_version = "1.4.2"
-    def epoxy_version = "4.4.0"
     def scope_version = "2.5.1"
 
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$scope_version"
-
-    implementation "com.airbnb.android:epoxy:$epoxy_version"
-    implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
-    implementation "com.airbnb.android:epoxy-glide-preloading:$epoxy_version"
-    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
 
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

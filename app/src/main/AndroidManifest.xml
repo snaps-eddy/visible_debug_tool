@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Webling_debug_tool"
         tools:targetApi="31">
         <activity
-            android:name="com.webling.webling_debug_tool.MainActivity"
+            android:name="com.eddy.webling_debug_tool.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -10,8 +10,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.eddy.debuglibrary.DebugApplication
 import com.eddy.debuglibrary.di.AppContainer
+import com.eddy.debuglibrary.di.DiManager
 import com.eddy.debuglibrary.presentation.view.OverlayTaskCallback
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayContract
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
@@ -26,7 +26,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         }
     }
 
-    private val appContainer: AppContainer by lazy { (application as DebugApplication).appContainer }
+    private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
     private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase) }
 
     private val binder = OverlayDebugToolPopUpBinder()

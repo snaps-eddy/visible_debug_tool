@@ -4,14 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import com.eddy.debuglibrary.DebugApplication
 import com.eddy.debuglibrary.di.AppContainer
+import com.eddy.debuglibrary.di.DiManager
 import com.example.debuglibrary.databinding.ActivityPermissionBinding
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -20,7 +19,7 @@ internal class PermissionActivity : AppCompatActivity() {
 
     private var _binding: ActivityPermissionBinding? = null
     private val binding get() = _binding!!
-    private val appContainer: AppContainer by lazy { (application as DebugApplication).appContainer }
+    private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +34,14 @@ internal class PermissionActivity : AppCompatActivity() {
         }
 
         binding.btnCancel.setOnClickListener {
-            EventBus.getDefault().post(PermissionEvent.NeverDeny)
+            EventBus.getDefault().post(PermissionEvent.Deny)
             finish()
         }
 
         binding.btnNeverSeeAgain.setOnClickListener {
             lifecycleScope.launch {
                 appContainer.writeDataStoreUseCase.run(true)
-                EventBus.getDefault().post(PermissionEvent.Deny)
+                EventBus.getDefault().post(PermissionEvent.NeverDeny)
                 finish()
             }
         }
@@ -59,7 +58,6 @@ internal class PermissionActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("test", "alakjaljka $resultCode :: $requestCode")
         if (requestCode == 9999) {
             if (!Settings.canDrawOverlays(this)) {
                 EventBus.getDefault().post(PermissionEvent.Deny)

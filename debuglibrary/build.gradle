@@ -1,0 +1,99 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+    id 'kotlin-kapt'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.webling.DebugLibrary'
+                artifactId = 'final'
+                version = '0.0.18'
+            }
+            // Creates a Maven publication called “debug”.
+            debug(MavenPublication) {
+                // Applies the component for the debug build variant.
+                from components.debug
+
+                groupId = 'com.webling.DebugLibrary'
+                artifactId = 'final-debug'
+                version = '0.0.18'
+            }
+        }
+    }
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 32
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+//    resourcePrefix 'webling_'
+}
+
+kapt {
+    correctErrorTypes true
+}
+
+dependencies {
+    def lifecycle_version = "2.5.1"
+    def scope_version = "2.5.1"
+    def room_version = "2.5.0"
+    def eventbus_version = "3.3.1"
+    def datastore_version = "1.0.0"
+//
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.6.0'
+
+    implementation "org.greenrobot:eventbus:$eventbus_version"
+
+    implementation "androidx.datastore:datastore-preferences:$datastore_version"
+    implementation "androidx.datastore:datastore-core:$datastore_version"
+
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$scope_version"
+
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+}

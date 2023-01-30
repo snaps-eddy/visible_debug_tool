@@ -1,4 +1,4 @@
-package com.eddy.debuglibrary.data.log
+package com.eddy.debuglibrary.data.log.remote
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +9,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-class LogcatCollector {
+internal class LogcatCollector {
     fun collect(): Flow<String> {
         val pid = android.os.Process.myPid()
         val commandArray = mutableListOf("logcat", "-v", "time", "--pid=$pid", "-s","*:D")

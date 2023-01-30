@@ -3,20 +3,24 @@ package com.eddy.debuglibrary.presentation.view.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.LifecycleService
+import com.eddy.debuglibrary.domain.log.model.LogLevel
+import com.eddy.debuglibrary.domain.log.model.LogModel
 import com.eddy.debuglibrary.presentation.view.OverlayTaskCallback
 import com.example.debuglibrary.R
 
-class OverlayTaskView @JvmOverloads constructor(
+internal class OverlayTaskView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -77,7 +81,7 @@ class OverlayTaskView @JvmOverloads constructor(
 
     private var isScrollBottom = false
 
-    fun addLogTextView(log: String) {
+    fun addLogTextView(log: LogModel) {
         val logContentView = createLogTextView(log)
         logContainer.addView(logContentView)
     }
@@ -101,8 +105,51 @@ class OverlayTaskView @JvmOverloads constructor(
         windowManager.addView(rootView, rootViewParams)
     }
 
-    private fun createLogTextView(log: String): TextView {
-        return TextView(context).apply { text = log }
+    private fun createLogTextView(log: LogModel): TextView {
+        return when (log.logLevel) {
+            LogLevel.V -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_v_color))
+                }
+            }
+            LogLevel.D -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_d_color))
+                }
+            }
+            LogLevel.I -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_i_color))
+                }
+            }
+            LogLevel.W -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_w_color))
+                }
+            }
+            LogLevel.E -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_e_color))
+                }
+            }
+            LogLevel.F -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_e_color))
+                }
+            }
+            LogLevel.S -> {
+                TextView(context).apply {
+                    text = log.content
+                    setTextColor(ContextCompat.getColor(context, R.color.log_level_i_color))
+                }
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -123,7 +170,6 @@ class OverlayTaskView @JvmOverloads constructor(
         }
         tvLog.setOnClickListener {
             applyExpandView()
-//            callback.onClickTagItem.invoke(tvLog.text.toString())
         }
         rootView.setOnLongClickListener {
             callback.onLongClickCloseService.invoke()

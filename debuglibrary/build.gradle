@@ -69,6 +69,20 @@ kapt {
 dependencies {
     def lifecycle_version = "2.5.1"
     def scope_version = "2.5.1"
+    def room_version = "2.5.0"
+    def eventbus_version = "3.3.1"
+    def datastore_version = "1.0.0"
+//
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.6.0'
+
+    implementation "org.greenrobot:eventbus:$eventbus_version"
+
+    implementation "androidx.datastore:datastore-preferences:$datastore_version"
+    implementation "androidx.datastore:datastore-core:$datastore_version"
 
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"

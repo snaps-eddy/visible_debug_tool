@@ -1,3 +1,3 @@
 package com.eddy.debuglibrary.presentation.base
 
-interface UiState
+internal interface UiState

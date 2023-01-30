@@ -18,7 +18,7 @@ import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
 import kotlinx.coroutines.*
 
 @SuppressLint("ClickableViewAccessibility")
-class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
+internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
 
     inner class OverlayDebugToolPopUpBinder : Binder() {
         fun getService(): OverlayTaskService {
@@ -64,7 +64,7 @@ class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
                 viewModel.effect.collect {
                     when (it) {
                         is OverlayContract.SideEffect.FetchLogs -> {
-                            view.addLogTextView(it.log.content)
+                            view.addLogTextView(it.log)
                         }
                         is OverlayContract.SideEffect.SearchLog -> {
                             view.searchLog(it.word)

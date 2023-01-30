@@ -3,9 +3,9 @@ package com.eddy.debuglibrary.presentation.viewmodel
 import com.eddy.debuglibrary.presentation.base.UiEffect
 import com.eddy.debuglibrary.presentation.base.UiEvent
 import com.eddy.debuglibrary.presentation.base.UiState
-import com.eddy.debuglibrary.presentation.model.log.LogUiModel
+import com.eddy.debuglibrary.domain.log.model.LogModel
 
-class OverlayContract {
+internal class OverlayContract {
 
     sealed interface Event : UiEvent {
         object OnCloseClick: Event
@@ -23,7 +23,7 @@ class OverlayContract {
 
 
     sealed interface SideEffect : UiEffect {
-        data class FetchLogs(val log : LogUiModel) : SideEffect
+        data class FetchLogs(val log : LogModel) : SideEffect
         data class SearchLog(val word: String): SideEffect
     }
 

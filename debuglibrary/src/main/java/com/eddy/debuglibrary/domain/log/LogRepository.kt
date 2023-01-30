@@ -1,9 +1,10 @@
 package com.eddy.debuglibrary.domain.log
 
+import com.eddy.debuglibrary.domain.log.model.LogModel
 import kotlinx.coroutines.flow.Flow
 
-interface LogRepository {
+internal interface LogRepository {
 
-    fun getLogcatData(): Flow<String>
+    fun getLogcatData(): Flow<LogModel>
 
 }

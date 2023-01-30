@@ -1,8 +1,8 @@
-package com.eddy.debuglibrary.data.log
+package com.eddy.debuglibrary.data.log.remote
 
 import kotlinx.coroutines.flow.Flow
 
-class LogRemoteDataSourceImpl(
+internal class LogRemoteDataSourceImpl(
     private val log: LogcatCollector
 ) : LogRemoteDataSource {
     override fun logDataCollect(): Flow<String> {

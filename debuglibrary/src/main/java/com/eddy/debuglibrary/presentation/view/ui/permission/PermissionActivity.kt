@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -45,28 +46,28 @@ internal class PermissionActivity : AppCompatActivity() {
                 finish()
             }
         }
-
     }
 
     private fun checkPermission() {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            Uri.parse("package:$packageName")
-        )
-        ActivityCompat.startActivityForResult(this, intent, 9999, null)
+        Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")).run { childForResult.launch(this) }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 9999) {
-            if (!Settings.canDrawOverlays(this)) {
-                EventBus.getDefault().post(PermissionEvent.Deny)
-            } else {
-                EventBus.getDefault().post(PermissionEvent.Allow)
-                finish()
+    private val childForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                RESULT_OK -> {
+                    if (!Settings.canDrawOverlays(this)) {
+                        EventBus.getDefault().post(PermissionEvent.Deny)
+                    } else {
+                        EventBus.getDefault().post(PermissionEvent.Allow)
+                        finish()
+                    }
+                }
+                RESULT_CANCELED -> {
+                    EventBus.getDefault().post(PermissionEvent.Deny)
+                }
             }
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()

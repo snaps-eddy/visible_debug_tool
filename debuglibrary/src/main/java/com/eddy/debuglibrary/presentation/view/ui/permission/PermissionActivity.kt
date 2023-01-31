@@ -8,7 +8,6 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.eddy.debuglibrary.di.AppContainer
 import com.eddy.debuglibrary.di.DiManager
@@ -25,7 +24,7 @@ internal class PermissionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setFinishOnTouchOutside(false)
         _binding = ActivityPermissionBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -54,18 +53,11 @@ internal class PermissionActivity : AppCompatActivity() {
 
     private val childForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            when (result.resultCode) {
-                RESULT_OK -> {
-                    if (!Settings.canDrawOverlays(this)) {
-                        EventBus.getDefault().post(PermissionEvent.Deny)
-                    } else {
-                        EventBus.getDefault().post(PermissionEvent.Allow)
-                        finish()
-                    }
-                }
-                RESULT_CANCELED -> {
-                    EventBus.getDefault().post(PermissionEvent.Deny)
-                }
+            if (!Settings.canDrawOverlays(this)) {
+                EventBus.getDefault().post(PermissionEvent.Deny)
+            } else {
+                EventBus.getDefault().post(PermissionEvent.Allow)
+                finish()
             }
         }
 

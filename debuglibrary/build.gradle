@@ -1,35 +1,30 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'maven-publish'
     id 'kotlin-kapt'
+    id 'org.jetbrains.dokka'
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
+def getVersion() {
+    def versionPropsFile = rootProject.file("version.properties")
+    if (versionPropsFile.exists()) {
 
-                // You can then customize attributes of the publication as shown below.
-                groupId = 'com.webling.DebugLibrary'
-                artifactId = 'final'
-                version = '0.0.18'
-            }
-            // Creates a Maven publication called “debug”.
-            debug(MavenPublication) {
-                // Applies the component for the debug build variant.
-                from components.debug
+        def versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
 
-                groupId = 'com.webling.DebugLibrary'
-                artifactId = 'final-debug'
-                version = '0.0.18'
-            }
-        }
+        return hasProperty('versionName') ? versionName : versionProps['VERSION_NAME']
+    } else {
+        throw new GradleException("Not found library version.")
     }
 }
+
+ext {
+    PUBLISH_GROUP_ID = 'io.github.snaps-eddy'
+    PUBLISH_VERSION = getVersion()
+    PUBLISH_ARTIFACT_ID = 'visibledebugtool'
+}
+
+apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
     compileSdk 32

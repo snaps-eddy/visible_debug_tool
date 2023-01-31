@@ -21,7 +21,6 @@ internal class AppContainer(context: Context) {
 
     val getLogcatUseCase = GetLogcatUseCase(logRepository)
 
-
     private val sharedPreferences: SharedPreferences by lazy { context.getSharedPreferences(EDDY_DEBUG_TOOL, Context.MODE_PRIVATE) }
     private val dataStoreLocalDataSource: DataStoreLocalDataSourceImpl by lazy { DataStoreLocalDataSourceImpl(sharedPreferences) }
     private val dataStoreRepository: DataStoreRepositoryImpl by lazy { DataStoreRepositoryImpl(dataStoreLocalDataSource) }

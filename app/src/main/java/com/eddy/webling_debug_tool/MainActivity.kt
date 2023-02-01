@@ -27,10 +27,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        createDebugTool(context = this) {
-            setAutoPermissionCheck(true)
-            setSearchKeyWordList(tags)
-        }.bindService()
+
+            createDebugTool(context = this) {
+                setAutoPermissionCheck(true)
+                setSearchKeyWordList(tags)
+            }.bindService()
+
 
     }
 }

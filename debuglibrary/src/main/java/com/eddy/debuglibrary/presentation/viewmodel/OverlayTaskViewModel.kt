@@ -1,6 +1,7 @@
 package com.eddy.debuglibrary.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.eddy.debuglibrary.domain.log.usecase.ClearLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.eddy.debuglibrary.presentation.base.BaseViewModel
 import kotlinx.coroutines.Job
@@ -8,6 +9,7 @@ import kotlinx.coroutines.launch
 
 internal class OverlayTaskViewModel(
     private val getLogcatUseCase: GetLogcatUseCase,
+    private val clearLogUseCase: ClearLogUseCase
 ) : BaseViewModel<OverlayContract.Event, OverlayContract.State, OverlayContract.SideEffect>() {
 
     private lateinit var job: Job
@@ -22,6 +24,12 @@ internal class OverlayTaskViewModel(
                 .collect {
                     setEffect { OverlayContract.SideEffect.FetchLogs(it) }
                 }
+        }
+    }
+
+    private fun clearLog() {
+        viewModelScope.launch {
+            clearLogUseCase.run(Unit)
         }
     }
 
@@ -45,6 +53,9 @@ internal class OverlayTaskViewModel(
             }
             is OverlayContract.Event.OnSearchLog -> {
                 setEffect { OverlayContract.SideEffect.SearchLog(event.word) }
+            }
+            is OverlayContract.Event.OnClearClick -> {
+                clearLog()
             }
         }
     }

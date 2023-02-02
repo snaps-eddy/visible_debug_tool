@@ -27,7 +27,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     }
 
     private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
-    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase) }
+    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase) }
 
     private val binder = OverlayDebugToolPopUpBinder()
     private val view: OverlayTaskView by lazy { OverlayTaskView(context = applicationContext, callback = this) }
@@ -95,7 +95,12 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         unBindCallback.invoke()
     }
 
+    private fun onClickClear() {
+        viewModel.setEvent(OverlayContract.Event.OnClearClick)
+    }
+
     override val onClickClose: () -> Unit = ::onClickClose
     override val onClickTagItem: (tag: String) -> Unit = ::onClickTagItem
     override val onLongClickCloseService: () -> Unit = ::onLongClickCloseService
+    override val onClickClear: () -> Unit = ::onClickClear
 }

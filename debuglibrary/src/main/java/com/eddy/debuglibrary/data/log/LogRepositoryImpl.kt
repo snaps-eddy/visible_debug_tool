@@ -35,4 +35,8 @@ internal class LogRepositoryImpl(
                 }
             }
     }
+
+    override fun clearLog() {
+        remote.clearLog()
+    }
 }

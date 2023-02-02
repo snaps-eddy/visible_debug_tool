@@ -3,10 +3,7 @@ package com.eddy.debuglibrary.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.eddy.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.eddy.debuglibrary.presentation.base.BaseViewModel
-import com.eddy.debuglibrary.domain.log.model.LogLevel
-import com.eddy.debuglibrary.domain.log.model.LogModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 internal class OverlayTaskViewModel(
@@ -20,7 +17,7 @@ internal class OverlayTaskViewModel(
 
         job = viewModelScope.launch {
 
-            val params = GetLogcatUseCase.Params(searchTag.ifEmpty { "" })
+            val params = GetLogcatUseCase.Params(searchTag.ifEmpty { "normal" })
             getLogcatUseCase.invoke(params)
                 .collect {
                     setEffect { OverlayContract.SideEffect.FetchLogs(it) }

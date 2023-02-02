@@ -11,8 +11,9 @@ internal class GetLogcatUseCase(
 ) : UseCase<LogModel, GetLogcatUseCase.Params>() {
 
     public override fun invoke(params: Params): Flow<LogModel> {
+        val filterWord = if(params.searchKeyWord == "normal") "" else params.searchKeyWord
         return log.getLogcatData()
-            .filter { it.content.contains(params.searchKeyWord) }
+            .filter { it.content.contains(filterWord) }
     }
 
     data class Params(

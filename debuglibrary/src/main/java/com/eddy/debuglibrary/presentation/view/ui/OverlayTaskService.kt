@@ -79,7 +79,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         this.unBindCallback = block
     }
 
-    internal fun setTagList(tags: List<String>?) {
+    internal fun setTagList(tags: List<String>) {
         view.setTagSpinnerAdapter(tags)
     }
 

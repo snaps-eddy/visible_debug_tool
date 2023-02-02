@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
-    private val tags: List<String> by lazy { listOf("eddy white","sdf","sdfffe") }
+    private val tags: List<String> by lazy { listOf("eddy white", "sdf", "sdfffe") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,18 +20,17 @@ class MainActivity : AppCompatActivity() {
             var i = 0
 
             while (i < 10) {
-                Log.d("eddy gege", "이거 돼? $i" )
-                Log.d("eddy white", "이거 돼? $i" )
+                Log.d("eddy gege", "이거 돼? $i")
+                Log.d("eddy white", "이거 돼? $i")
                 i++
                 Thread.sleep(1500)
             }
         }
 
-
-            createDebugTool(context = this) {
-                setAutoPermissionCheck(true)
-                setSearchKeyWordList(tags)
-            }.bindService()
+        createDebugTool(context = this) {
+            setAutoPermissionCheck(true)
+            setSearchKeyWordList(tags)
+        }.bindService()
 
 
     }

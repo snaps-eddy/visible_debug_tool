@@ -3,7 +3,6 @@ package com.eddy.debuglibrary.presentation.view.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
@@ -26,7 +25,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     private val callback: OverlayTaskCallback
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private var easterEgg: Int = 0
 
     private val rootView: RelativeLayout by lazy { inflate.inflate(R.layout.view_in_overlay_popup, null) as RelativeLayout }
     private val windowManager: WindowManager by lazy { context.getSystemService(LifecycleService.WINDOW_SERVICE) as WindowManager }
@@ -50,6 +48,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private var touchY = 0
     private var viewX = 0
     private var viewY = 0
+    private var isExpandView = false
 
     private val screenRatio = 3
     private val screenFullRatio = 1.5
@@ -94,8 +93,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
         setClickListener()
     }
 
-    fun setTagSpinnerAdapter(tags: List<String>?) {
-        logEvents = tags ?: listOf()
+    fun setTagSpinnerAdapter(tags: List<String>) {
+        logEvents = tags
 
         val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
         spLog.adapter = adapter
@@ -155,12 +154,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     private fun setClickListener() {
         btnMenu.setOnClickListener {
-            if (easterEgg > 5) {
-                easterEgg = 0
-                callback.onClickTagItem.invoke("")
-            } else {
-                easterEgg += 1
-            }
+
         }
 
         ivMove.setOnTouchListener(viewMoveListener)
@@ -168,9 +162,11 @@ internal class OverlayTaskView @JvmOverloads constructor(
             applyContractView()
             callback.onClickClose.invoke()
         }
+
         tvLog.setOnClickListener {
-            applyExpandView()
+            if(isExpandView.not()) applyExpandView()
         }
+
         rootView.setOnLongClickListener {
             callback.onLongClickCloseService.invoke()
             windowManager.removeView(rootView)
@@ -207,25 +203,30 @@ internal class OverlayTaskView @JvmOverloads constructor(
             width = Resources.getSystem().displayMetrics.widthPixels
             height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
         }
+        isExpandView = true
         ivClose.isVisible = true
         spLog.isVisible = true
         svLog.isVisible = true
         cbZoom.isVisible = true
         cbZoom.isChecked = false
+        tvLog.text = logEvents[0]
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.RIGHT_OF)
         moveLayoutParams.addRule(RelativeLayout.LEFT_OF, ivClose.id)
         ivMove.layoutParams = moveLayoutParams
+
+        callback.onClickTagItem.invoke("normal")
     }
 
     private fun applyContractView() {
+        isExpandView = false
         ivClose.isVisible = false
         spLog.isVisible = false
         svLog.isVisible = false
         cbZoom.isVisible = false
         cbZoom.isChecked = true
-        tvLog.text = "All"
+        tvLog.text = "Log"
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.LEFT_OF)
@@ -243,7 +244,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 touchY = event.rawY.toInt()
                 viewX = rootViewParams.x
                 viewY = rootViewParams.y
-
             }
             MotionEvent.ACTION_MOVE -> {
 

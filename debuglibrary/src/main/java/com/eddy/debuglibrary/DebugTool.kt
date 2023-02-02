@@ -81,7 +81,7 @@ class DebugTool private constructor(
             isService = true
 
             myService = binder.getService()
-            myService.setTagList(builder.searchKeyWords)
+            myService.setTagList(builder._searchKeyWords)
             myService.setUnBindServiceCallback(::unbindService)
         }
 
@@ -109,7 +109,17 @@ class DebugTool private constructor(
 
     public class Builder(private val context: Context) {
 
-        internal var searchKeyWords: List<String>? = null
+        private var searchKeyWords: List<String>? = null
+        internal val _searchKeyWords: MutableList<String>
+            get() {
+                return searchKeyWords?.let {
+                    mutableListOf("normal").run {
+                        addAll(it)
+                        this
+                    }
+                } ?: mutableListOf("normal")
+
+            }
         internal var isAutoPermission: Boolean = false
 
         public fun setSearchKeyWord(keyWord: String): Builder = apply {

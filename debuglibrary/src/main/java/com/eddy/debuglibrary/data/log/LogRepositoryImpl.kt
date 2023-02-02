@@ -12,7 +12,12 @@ internal class LogRepositoryImpl(
     private val remote: LogRemoteDataSource
 ): LogRepository {
 
-    private val exceptChar = listOf("WifiMulticast","WifiHW","MtpService","PushClient","ViewRootImpl","InputTransport","InputMethodManager","mali|TextView", "activityThread")
+    private val exceptChar =
+        listOf(
+        "WifiMulticast","WifiHW","MtpService","PushClient","ViewRootImpl","InputTransport","InputMethodManager","mali|TextView", "activityThread", "TrafficStats",
+        "tagSocket", "ConversionRepoter","nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium" ,"CCodec" ,"Codec2Client","ReflectedParamUpdater",
+        "ColorUtils" ,"MediaCodec" ,"SurfaceUtils", "CCodecBufferChannel","BufferQueueProducer","cr_MediaCodecBridge","BufferPoolAccessor"
+    )
 
     override fun getLogcatData(): Flow<LogModel> {
         return remote.logDataCollect()

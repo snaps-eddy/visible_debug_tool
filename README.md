@@ -1,15 +1,17 @@
-# debug_tool
+# Debug_Tool
 
 -----------
-## debug_tool 이란 무엇인가?
+## What is Debug_Tool?
 
-각자의 팀(QA팀, 백엔드팀, 프런트팀 등등) 에서 앱에서 발생하는 로그와 데이터 또는 흐름 등을 확인하고 싶을 수 있습니다.
+Each team (QA team, backend team, front team, etc.) may want to check the logs and data or flows that occur in the app.
 
-시각적으로 데이터의 흐름과 로그등을 앱에서 확인할 수 있는 라이브러리 입니다.
+This is a library that allows you to visually check data flow and logs in your app.
 
 -----------
 
 ## Setup
+
+[![Generic badge](https://img.shields.io/maven-central/v/io.github.snaps-eddy/visibledebugtool)](https://shields.io/)
 
 ```
 repositories {

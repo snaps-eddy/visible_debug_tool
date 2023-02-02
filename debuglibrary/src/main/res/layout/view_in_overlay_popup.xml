@@ -26,6 +26,7 @@
             android:src="@drawable/ic_baseline_menu_24"
             android:text="click"
             android:textColor="#ffffff"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

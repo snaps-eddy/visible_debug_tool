@@ -60,12 +60,11 @@
             android:id="@+id/iv_move"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
             android:layout_toRightOf="@id/tv_log"
             android:clickable="true"
             android:src="@drawable/move" />
-
 
         <CheckBox
             android:id="@+id/cb_zoom"
@@ -91,6 +90,17 @@
             android:clickable="true"
             android:visibility="gone"
             />
+
+        <ImageView
+            android:id="@+id/iv_trash_log"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:visibility="gone"
+            android:layout_toLeftOf="@+id/cb_zoom"
+            android:src="@drawable/trash_can" />
 
 
     </RelativeLayout>
@@ -123,7 +133,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             </LinearLayout>
-
 
         </androidx.core.widget.NestedScrollView>
 

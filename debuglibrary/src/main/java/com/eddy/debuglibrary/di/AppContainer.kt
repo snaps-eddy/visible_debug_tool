@@ -9,6 +9,7 @@ import com.eddy.debuglibrary.data.log.remote.LogRemoteDataSourceImpl
 import com.eddy.debuglibrary.data.log.remote.LogcatCollector
 import com.eddy.debuglibrary.domain.datastore.usecase.GetNeverSeeAgainUseCase
 import com.eddy.debuglibrary.domain.datastore.usecase.WriteDataStoreUseCase
+import com.eddy.debuglibrary.domain.log.usecase.ClearLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_DEBUG_TOOL
 
@@ -20,6 +21,7 @@ internal class AppContainer(context: Context) {
     private val logRepository = LogRepositoryImpl(logRemoteDataSource)
 
     val getLogcatUseCase = GetLogcatUseCase(logRepository)
+    val clearLogUseCase = ClearLogUseCase(logRepository)
 
     private val sharedPreferences: SharedPreferences by lazy { context.getSharedPreferences(EDDY_DEBUG_TOOL, Context.MODE_PRIVATE) }
     private val dataStoreLocalDataSource: DataStoreLocalDataSourceImpl by lazy { DataStoreLocalDataSourceImpl(sharedPreferences) }

@@ -10,6 +10,14 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 internal class LogcatCollector {
+
+    fun clearLog() {
+        ProcessBuilder()
+            .command("logcat", "-c")
+            .redirectErrorStream(true)
+            .start()
+    }
+
     fun collect(): Flow<String> {
         val pid = android.os.Process.myPid()
         val commandArray = mutableListOf("logcat", "-v", "time", "--pid=$pid", "-s","*:D")

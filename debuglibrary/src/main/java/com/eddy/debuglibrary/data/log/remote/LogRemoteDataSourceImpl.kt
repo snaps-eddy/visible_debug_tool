@@ -8,4 +8,8 @@ internal class LogRemoteDataSourceImpl(
     override fun logDataCollect(): Flow<String> {
         return log.collect()
     }
+
+    override fun clearLog() {
+        log.clearLog()
+    }
 }

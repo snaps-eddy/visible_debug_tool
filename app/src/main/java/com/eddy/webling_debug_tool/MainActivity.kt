@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
-    private val tags: List<String> by lazy { listOf("eddy white", "sdf", "sdfffe") }
+    private val tags: List<String> by lazy { listOf("eddy white", "sdf", "몰라~") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

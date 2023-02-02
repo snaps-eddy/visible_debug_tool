@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface LogRepository {
 
     fun getLogcatData(): Flow<LogModel>
-
+    fun clearLog()
 }

@@ -64,6 +64,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val ivClose: ImageView by lazy { rootView.findViewById(R.id.iv_close) }
     private val cbZoom: CheckBox by lazy { rootView.findViewById(R.id.cb_zoom) }
     private val spLog: Spinner by lazy { rootView.findViewById(R.id.sp_log) }
+    private val ivTrashLog: ImageView by lazy { rootView.findViewById(R.id.iv_trash_log) }
 
     private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -153,6 +154,11 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setClickListener() {
+        ivTrashLog.setOnClickListener {
+            callback.onClickClear.invoke()
+            logContainer.removeAllViews()
+        }
+
         btnMenu.setOnClickListener {
 
         }
@@ -209,7 +215,9 @@ internal class OverlayTaskView @JvmOverloads constructor(
         svLog.isVisible = true
         cbZoom.isVisible = true
         cbZoom.isChecked = false
+        ivTrashLog.isVisible = true
         tvLog.text = logEvents[0]
+        spLog.setSelection(0)
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.RIGHT_OF)
@@ -226,6 +234,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         svLog.isVisible = false
         cbZoom.isVisible = false
         cbZoom.isChecked = true
+        ivTrashLog.isVisible = false
         tvLog.text = "Log"
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams

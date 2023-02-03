@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface LogRepository {
 
-    fun getLogcatData(): Flow<LogModel>
+    fun getLogcatData(filterWord: String): Flow<List<LogModel>>
     fun clearLog()
+    fun deleteLogData()
 }

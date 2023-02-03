@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:viewBindingIgnore="true"
     tools:ignore="ResourceName">
 
     <data>
@@ -15,6 +14,7 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:layout_marginBottom="2dp"
-            android:text="@{model.content}"
             android:textColor="@color/default_text_color"
             android:textSize="15sp"
             tools:text="Epoxy Test" />

@@ -9,7 +9,7 @@ import android.os.IBinder
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
-import com.eddy.debuglibrary.presentation.view.ui.OverlayTaskService
+import com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService
 import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity
 import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionEvent
 import com.eddy.debuglibrary.util.Constants

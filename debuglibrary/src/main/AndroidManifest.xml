@@ -12,7 +12,7 @@
         </activity>
 
         <service
-            android:name="com.eddy.debuglibrary.presentation.view.ui.OverlayTaskService"
+            android:name="com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService"
             android:enabled="true"
             android:exported="true" />
     </application>

@@ -1,4 +1,4 @@
-package com.eddy.debuglibrary.presentation.view.ui
+package com.eddy.debuglibrary.presentation.view.ui.overlay
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.eddy.debuglibrary.di.AppContainer
 import com.eddy.debuglibrary.di.DiManager
-import com.eddy.debuglibrary.presentation.view.OverlayTaskCallback
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayContract
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
 import kotlinx.coroutines.*
@@ -27,7 +26,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     }
 
     private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
-    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase) }
+    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase, appContainer.deleteLogUseCase) }
 
     private val binder = OverlayDebugToolPopUpBinder()
     private val view: OverlayTaskView by lazy { OverlayTaskView(context = applicationContext, callback = this) }
@@ -51,6 +50,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
                 viewModel.uiState.collect {
                     when (val state = it.logsState) {
                         OverlayContract.LogsState.Idle -> {
+                            viewModel.setEvent(OverlayContract.Event.DeleteLog)
                             view.init()
                         }
                     }
@@ -88,7 +88,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     }
 
     private fun onClickTagItem(tag: String) {
-        viewModel.setEvent(OverlayContract.Event.OnClickTagItem(tag))
+        viewModel.setEvent(OverlayContract.Event.OnClickKeyWordItem(tag))
     }
 
     private fun onLongClickCloseService() {

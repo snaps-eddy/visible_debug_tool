@@ -1,4 +1,4 @@
-package com.eddy.debuglibrary.presentation.view.ui
+package com.eddy.debuglibrary.presentation.view.ui.overlay
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,11 +12,13 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.LifecycleService
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.airbnb.epoxy.EpoxyRecyclerView
 import com.eddy.debuglibrary.domain.log.model.LogLevel
 import com.eddy.debuglibrary.domain.log.model.LogModel
-import com.eddy.debuglibrary.presentation.view.OverlayTaskCallback
+import com.eddy.debuglibrary.presentation.view.model.LogUiModel
+import com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy.LogController
 import com.example.debuglibrary.R
 
 internal class OverlayTaskView @JvmOverloads constructor(
@@ -56,8 +58,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private lateinit var logEvents: List<String>
 
     private val inflate: LayoutInflater by lazy { context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
-    private val svLog: NestedScrollView by lazy { rootView.findViewById(R.id.sv_logs) }
-    private val logContainer: LinearLayout by lazy { rootView.findViewById(R.id.log_view_container) }
+//    private val svLog: NestedScrollView by lazy { rootView.findViewById(R.id.sv_logs) }
+//    private val logContainer: LinearLayout by lazy { rootView.findViewById(R.id.log_view_container) }
     private val ivMove: ImageView by lazy { rootView.findViewById(R.id.iv_move) }
     private val btnMenu: ImageButton by lazy { rootView.findViewById(R.id.btn_menu) }
     private val tvLog: TextView by lazy { rootView.findViewById(R.id.tv_log) }
@@ -65,12 +67,14 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val cbZoom: CheckBox by lazy { rootView.findViewById(R.id.cb_zoom) }
     private val spLog: Spinner by lazy { rootView.findViewById(R.id.sp_log) }
     private val ivTrashLog: ImageView by lazy { rootView.findViewById(R.id.iv_trash_log) }
+    private val logController: LogController by lazy { LogController() }
+    private val rvLog: EpoxyRecyclerView by lazy { rootView.findViewById(R.id.rv_logs) }
 
     private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             tvLog.text = logEvents[position]
             callback.onClickTagItem.invoke(logEvents[position])
-            logContainer.removeAllViews()
+//            logContainer.removeAllViews()
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -81,9 +85,9 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
     private var isScrollBottom = false
 
-    fun addLogTextView(log: LogModel) {
-        val logContentView = createLogTextView(log)
-        logContainer.addView(logContentView)
+    fun addLogTextView(log: List<LogUiModel>) {
+        logController.setData(log)
+        if(isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
     }
 
     fun searchLog(log: String) {
@@ -91,6 +95,12 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     fun init() {
+        rvLog.apply {
+            setController(logController)
+            layoutManager = LinearLayoutManager(context).apply {
+                orientation = LinearLayoutManager.VERTICAL
+            }
+        }
         setClickListener()
     }
 
@@ -114,7 +124,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 }
             }
             LogLevel.D -> {
-                TextView(context).apply {
+                TextView(context).apply {œ
                     text = log.content
                     setTextColor(ContextCompat.getColor(context, R.color.log_level_d_color))
                 }
@@ -156,7 +166,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private fun setClickListener() {
         ivTrashLog.setOnClickListener {
             callback.onClickClear.invoke()
-            logContainer.removeAllViews()
+//            logContainer.removeAllViews()
         }
 
         btnMenu.setOnClickListener {
@@ -180,39 +190,40 @@ internal class OverlayTaskView @JvmOverloads constructor(
         }
         cbZoom.setOnClickListener {
             if (cbZoom.isChecked) {
-                svLog.updateLayoutParams {
+                rvLog.updateLayoutParams {
                     width = Resources.getSystem().displayMetrics.widthPixels
                     height = ((Resources.getSystem().displayMetrics.heightPixels / screenFullRatio).toInt())
                 }
             } else {
-                svLog.updateLayoutParams {
+                rvLog.updateLayoutParams {
                     width = Resources.getSystem().displayMetrics.widthPixels
                     height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
                 }
             }
         }
-        svLog.viewTreeObserver.addOnGlobalLayoutListener {
-            svLog.post {
-                if (isScrollBottom) {
-                    svLog.fullScroll(ScrollView.FOCUS_DOWN)
-                }
-            }
-        }
-        svLog.setOnScrollChangeListener { _, _, _, _, _ ->
-            isScrollBottom = !svLog.canScrollVertically(1)
+
+//        rvLog.viewTreeObserver.addOnGlobalLayoutListener {
+//            rvLog.post {
+//                if (isScrollBottom) {
+//                    rvLog.fullScroll(ScrollView.FOCUS_DOWN)
+//                }
+//            }
+//        }
+        rvLog.setOnScrollChangeListener { _, _, _, _, _ ->
+            isScrollBottom = !rvLog.canScrollVertically(1)
         }
         spLog.onItemSelectedListener = logSelectorListener
     }
 
     private fun applyExpandView() {
-        svLog.updateLayoutParams {
+        rvLog.updateLayoutParams {
             width = Resources.getSystem().displayMetrics.widthPixels
             height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
         }
         isExpandView = true
         ivClose.isVisible = true
         spLog.isVisible = true
-        svLog.isVisible = true
+        rvLog.isVisible = true
         cbZoom.isVisible = true
         cbZoom.isChecked = false
         ivTrashLog.isVisible = true
@@ -231,7 +242,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         isExpandView = false
         ivClose.isVisible = false
         spLog.isVisible = false
-        svLog.isVisible = false
+        rvLog.isVisible = false
         cbZoom.isVisible = false
         cbZoom.isChecked = true
         ivTrashLog.isVisible = false

@@ -1,4 +1,4 @@
-package com.eddy.debuglibrary.presentation.view
+package com.eddy.debuglibrary.presentation.view.ui.overlay
 
 internal interface OverlayTaskCallback {
     val onClickClose: () -> Unit

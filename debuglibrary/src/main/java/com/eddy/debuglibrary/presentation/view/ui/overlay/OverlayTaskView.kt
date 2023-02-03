@@ -124,7 +124,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 }
             }
             LogLevel.D -> {
-                TextView(context).apply {œ
+                TextView(context).apply {
                     text = log.content
                     setTextColor(ContextCompat.getColor(context, R.color.log_level_d_color))
                 }

@@ -4,14 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.eddy.debuglibrary.data.log.entity.Log
-import com.eddy.debuglibrary.data.log.entity.LogConverters
+import com.eddy.debuglibrary.data.log.entity.LogEntity
 import com.eddy.debuglibrary.data.log.local.dao.LogDao
 
-@Database(entities = [Log::class], version = 1, exportSchema = true)
-@TypeConverters(LogConverters::class)
+@Database(entities = [LogEntity::class], version = 1, exportSchema = true)
 internal abstract class AppDatabase: RoomDatabase() {
 
     abstract fun logDao(): LogDao

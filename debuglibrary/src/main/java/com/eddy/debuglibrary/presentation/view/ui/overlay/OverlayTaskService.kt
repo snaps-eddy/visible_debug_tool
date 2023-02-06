@@ -50,7 +50,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
                 viewModel.uiState.collect {
                     when (val state = it.logsState) {
                         OverlayContract.LogsState.Idle -> {
-                            viewModel.setEvent(OverlayContract.Event.DeleteLog)
+                            onClickDelete()
                             view.init()
                         }
                     }
@@ -95,12 +95,12 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         unBindCallback.invoke()
     }
 
-    private fun onClickClear() {
-        viewModel.setEvent(OverlayContract.Event.OnClearClick)
+    private fun onClickDelete() {
+        viewModel.setEvent(OverlayContract.Event.DeleteLog)
     }
 
     override val onClickClose: () -> Unit = ::onClickClose
     override val onClickTagItem: (tag: String) -> Unit = ::onClickTagItem
     override val onLongClickCloseService: () -> Unit = ::onLongClickCloseService
-    override val onClickClear: () -> Unit = ::onClickClear
+    override val onClickDelete: () -> Unit = ::onClickDelete
 }

@@ -74,7 +74,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             tvLog.text = logEvents[position]
             callback.onClickTagItem.invoke(logEvents[position])
-//            logContainer.removeAllViews()
+            rvLog.removeAllViewsInLayout()
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -165,8 +165,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     private fun setClickListener() {
         ivTrashLog.setOnClickListener {
-            callback.onClickClear.invoke()
-//            logContainer.removeAllViews()
+            callback.onClickDelete.invoke()
+            rvLog.removeAllViewsInLayout()
         }
 
         btnMenu.setOnClickListener {
@@ -179,9 +179,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
             callback.onClickClose.invoke()
         }
 
-        tvLog.setOnClickListener {
-            if(isExpandView.not()) applyExpandView()
-        }
+        tvLog.setOnClickListener { if(isExpandView.not()) applyExpandView() }
 
         rootView.setOnLongClickListener {
             callback.onLongClickCloseService.invoke()
@@ -246,7 +244,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         cbZoom.isVisible = false
         cbZoom.isChecked = true
         ivTrashLog.isVisible = false
-        tvLog.text = "Log"
+        tvLog.text = resources.getText(R.string.log)
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.LEFT_OF)

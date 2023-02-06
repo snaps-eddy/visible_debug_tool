@@ -1,7 +1,6 @@
 package com.eddy.debuglibrary.data.log
 
-import com.eddy.debuglibrary.data.log.entity.Level
-import com.eddy.debuglibrary.data.log.entity.Log
+import com.eddy.debuglibrary.data.log.entity.LogEntity
 import com.eddy.debuglibrary.data.log.local.LogLocalDataSource
 import com.eddy.debuglibrary.data.log.remote.LogRemoteDataSource
 import com.eddy.debuglibrary.domain.log.LogRepository
@@ -13,14 +12,14 @@ import kotlinx.coroutines.flow.*
 internal class LogRepositoryImpl(
     private val remote: LogRemoteDataSource,
     private val local: LogLocalDataSource
-): LogRepository {
+) : LogRepository {
 
     private val exceptChar =
         listOf(
-        "WifiMulticast","WifiHW","MtpService","PushClient","ViewRootImpl","InputTransport","InputMethodManager","mali|TextView", "activityThread", "TrafficStats",
-        "tagSocket", "ConversionRepoter","nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium" ,"CCodec" ,"Codec2Client","ReflectedParamUpdater",
-        "ColorUtils" ,"MediaCodec" ,"SurfaceUtils", "CCodecBufferChannel","BufferQueueProducer","cr_MediaCodecBridge","BufferPoolAccessor"
-    )
+            "WifiMulticast", "WifiHW", "MtpService", "PushClient", "ViewRootImpl", "InputTransport", "InputMethodManager", "mali|TextView", "activityThread", "TrafficStats",
+            "tagSocket", "ConversionRepoter", "nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium", "CCodec", "Codec2Client", "ReflectedParamUpdater",
+            "ColorUtils", "MediaCodec", "SurfaceUtils", "CCodecBufferChannel", "BufferQueueProducer", "cr_MediaCodecBridge", "BufferPoolAccessor"
+        )
 
     override fun getLogcatData(filterWord: String): Flow<List<LogModel>> {
         return remote.logDataCollect()
@@ -28,32 +27,32 @@ internal class LogRepositoryImpl(
             .filter { it.contains(filterWord) }
             .map {
                 when {
-                    it.contains(Level.V.containWord) -> { Log(content = it, level = Level.V) }
-                    it.contains(Level.D.containWord) -> { Log(content = it, level = Level.D) }
-                    it.contains(Level.I.containWord) -> { Log(content = it, level = Level.I) }
-                    it.contains(Level.W.containWord) -> { Log(content = it, level = Level.W) }
-                    it.contains(Level.E.containWord) -> { Log(content = it, level = Level.E) }
-                    it.contains(Level.F.containWord) -> { Log(content = it, level = Level.F) }
-                    it.contains(Level.S.containWord) -> { Log(content = it, level = Level.S) }
-                    else ->  { Log(content = it, level = Level.S) }
+                    it.contains(LogLevel.V.containWord) -> { LogEntity(content = it, level = LogLevel.V.containWord) }
+                    it.contains(LogLevel.D.containWord) -> { LogEntity(content = it, level = LogLevel.D.containWord) }
+                    it.contains(LogLevel.I.containWord) -> { LogEntity(content = it, level = LogLevel.I.containWord) }
+                    it.contains(LogLevel.W.containWord) -> { LogEntity(content = it, level = LogLevel.W.containWord) }
+                    it.contains(LogLevel.E.containWord) -> { LogEntity(content = it, level = LogLevel.E.containWord) }
+                    it.contains(LogLevel.F.containWord) -> { LogEntity(content = it, level = LogLevel.F.containWord) }
+                    it.contains(LogLevel.S.containWord) -> { LogEntity(content = it, level = LogLevel.S.containWord) }
+                    else -> { LogEntity(content = it, level = LogLevel.S.containWord) }
                 }
             }.map { local.insertLog(it) }
             .flatMapConcat { local.getAllLog() }
-            .flowOn(Dispatchers.IO)
             .map {
                 it.map {
-                    when(it.level) {
-                        Level.V -> { LogModel(content = it.content, logLevel = LogLevel.V)  }
-                        Level.D -> { LogModel(content = it.content, logLevel = LogLevel.D)  }
-                        Level.I -> { LogModel(content = it.content, logLevel = LogLevel.I)  }
-                        Level.W -> { LogModel(content = it.content, logLevel = LogLevel.W)  }
-                        Level.E -> { LogModel(content = it.content, logLevel = LogLevel.E)  }
-                        Level.F -> { LogModel(content = it.content, logLevel = LogLevel.F)  }
-                        Level.S -> { LogModel(content = it.content, logLevel = LogLevel.S)  }
-                        else -> { LogModel(content = it.content, logLevel = LogLevel.S)  }
+                    when {
+                        it.level.contains(LogLevel.V.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.V) }
+                        it.level.contains(LogLevel.D.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.D) }
+                        it.level.contains(LogLevel.I.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.I) }
+                        it.level.contains(LogLevel.W.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.W) }
+                        it.level.contains(LogLevel.E.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.E) }
+                        it.level.contains(LogLevel.F.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.F) }
+                        it.level.contains(LogLevel.S.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.S) }
+                        else -> { LogModel(content = it.content, logLevel = LogLevel.E) }
                     }
                 }
             }
+            .flowOn(Dispatchers.IO)
     }
 
 

@@ -18,7 +18,7 @@ internal class LogRepositoryImpl(
         listOf(
             "WifiMulticast", "WifiHW", "MtpService", "PushClient", "ViewRootImpl", "InputTransport", "InputMethodManager", "mali|TextView", "activityThread", "TrafficStats",
             "tagSocket", "ConversionRepoter", "nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium", "CCodec", "Codec2Client", "ReflectedParamUpdater",
-            "ColorUtils", "MediaCodec", "SurfaceUtils", "CCodecBufferChannel", "BufferQueueProducer", "cr_MediaCodecBridge", "BufferPoolAccessor"
+            "ColorUtils", "MediaCodec", "SurfaceUtils", "CCodecBufferChannel", "BufferQueueProducer", "cr_MediaCodecBridge", "BufferPoolAccessor","beginning of main"
         )
 
     override fun getLogcatData(filterWord: String): Flow<List<LogModel>> {
@@ -61,6 +61,7 @@ internal class LogRepositoryImpl(
     }
 
     override fun deleteLogData() {
+        remote.clearLog()
         local.deleteAllLog()
     }
 }

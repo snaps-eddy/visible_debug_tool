@@ -21,7 +21,7 @@ internal class OverlayTaskViewModel(
 
     fun requestLogcats(searchTag: String) {
         cancelJob()
-        deleteLog()
+        clearLog()
 
         job = viewModelScope.launch {
 
@@ -34,12 +34,6 @@ internal class OverlayTaskViewModel(
         }
     }
 
-    private fun clearLog() {
-        viewModelScope.launch {
-            clearLogUseCase.run(Unit)
-        }
-    }
-
     private fun cancelJob() {
         if (this::job.isInitialized) {
             job.cancel()
@@ -48,6 +42,12 @@ internal class OverlayTaskViewModel(
 
     override fun createInitialState(): OverlayContract.State {
         return OverlayContract.State(OverlayContract.LogsState.Idle)
+    }
+
+    private fun clearLog() {
+        viewModelScope.launch {
+            clearLogUseCase.run(Unit)
+        }
     }
 
     private fun deleteLog() {

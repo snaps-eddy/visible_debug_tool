@@ -5,7 +5,7 @@ internal data class LogModel(
     val logLevel: LogLevel
 )
 
-sealed class LogLevel(val containWord: String) {
+internal sealed class LogLevel(val containWord: String) {
 
     object V : LogLevel(this.V)
     object D : LogLevel(this.D)

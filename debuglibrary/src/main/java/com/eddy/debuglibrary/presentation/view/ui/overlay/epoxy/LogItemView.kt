@@ -1,8 +1,11 @@
 package com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy
 
+import android.os.Build
 import android.view.ViewParent
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -24,7 +27,7 @@ internal abstract class LogItemView : EpoxyModelWithHolder<LogItemViewHolder>() 
         with(holder) {
             textView.apply {
                 text = content
-                setTextColor(contentColor)
+                setTextColor(ContextCompat.getColor(context, contentColor))
             }
         }
     }

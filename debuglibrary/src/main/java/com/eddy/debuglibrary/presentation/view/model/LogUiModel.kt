@@ -7,8 +7,7 @@ internal data class LogUiModel(
     val content: String,
     val contentLevel: LogLevel
 ) {
-
-    val contentColor = when (contentLevel) {
+    var contentColor = when (contentLevel) {
         LogLevel.V -> { R.color.log_level_v_color }
         LogLevel.D -> { R.color.log_level_d_color }
         LogLevel.I -> { R.color.log_level_i_color }

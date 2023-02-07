@@ -5,6 +5,7 @@ import com.eddy.debuglibrary.domain.log.usecase.ClearLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.DeleteLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.eddy.debuglibrary.presentation.base.BaseViewModel
+import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,6 +19,7 @@ internal class OverlayTaskViewModel(
 ) : BaseViewModel<OverlayContract.Event, OverlayContract.State, OverlayContract.SideEffect>() {
 
     private lateinit var job: Job
+    private lateinit var logForms: List<LogForm>
 
     fun requestLogcats(searchTag: String) {
         cancelJob()
@@ -29,8 +31,7 @@ internal class OverlayTaskViewModel(
             getLogcatUseCase.invoke(params)
                 .map { it.map { LogUiModel(it.content, it.logLevel) } }
                 .collect {
-                    setEffect { OverlayContract.SideEffect.FetchLogs(it) }
-                }
+                    setEffect { OverlayContract.SideEffect.FetchLogs(it) } }
         }
     }
 
@@ -72,6 +73,9 @@ internal class OverlayTaskViewModel(
             }
             is OverlayContract.Event.DeleteLog -> {
                 deleteLog()
+            }
+            is OverlayContract.Event.ApplyLogForm -> {
+                logForms = event.logForm
             }
         }
     }

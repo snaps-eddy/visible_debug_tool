@@ -21,7 +21,7 @@ internal class LogLocalDataSourceImpl(
         logDao.insertAllLog(logEntities)
     }
 
-    override fun deleteAllLog() {
+    override suspend fun deleteAllLog() {
         logDao.deleteAllLog()
     }
 

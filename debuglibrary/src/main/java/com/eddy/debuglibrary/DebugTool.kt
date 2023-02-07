@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
 import android.os.IBinder
 import android.provider.Settings
 import android.widget.Toast
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
+@JvmSynthetic
 public inline fun createDebugTool(
     context: Context,
     crossinline block: DebugTool.Builder.() -> Unit
@@ -82,6 +84,7 @@ class DebugTool private constructor(
 
             myService = binder.getService()
             myService.setTagList(builder._searchKeyWords)
+//            myService.setLogFrom(builder._logForm)
             myService.setUnBindServiceCallback(::unbindService)
         }
 
@@ -109,7 +112,9 @@ class DebugTool private constructor(
 
     public class Builder(private val context: Context) {
 
-        private var searchKeyWords: List<String>? = null
+        @set:JvmSynthetic
+        public var searchKeyWords: List<String>? = null
+
         internal val _searchKeyWords: MutableList<String>
             get() {
                 return searchKeyWords?.let {
@@ -120,14 +125,34 @@ class DebugTool private constructor(
                 } ?: mutableListOf("normal")
 
             }
-        internal var isAutoPermission: Boolean = false
 
-        public fun setSearchKeyWord(keyWord: String): Builder = apply {
-            this.searchKeyWords = listOf(keyWord)
+        @set:JvmSynthetic
+        public var isAutoPermission: Boolean = false
+
+        @set:JvmSynthetic
+        public var textColors: Int = Color.BLACK
+
+//        @set:JvmSynthetic/**/
+//        public var logLevel: LogLevel = LogLevel.D
+
+//        internal val _logForm: List<LogForm> = listOf(LogForm(textColors, logLevel))
+
+
+//        public fun setLogLevelTextColor(color: Int, logLevel: LogLevel): Builder = apply {
+//            this.textColors = color
+//            this.logLevel = logLevel
+//        }
+
+//        public fun setTextColors(values: List<LogForm>): Builder = apply {
+//
+//        }
+
+        public fun setSearchKeyWord(value: String): Builder = apply {
+            this.searchKeyWords = listOf(value)
         }
 
-        public fun setSearchKeyWordList(keyWords: List<String>): Builder = apply {
-            this.searchKeyWords = keyWords
+        public fun setSearchKeyWordList(values: List<String>): Builder = apply {
+            this.searchKeyWords = values
         }
 
         public fun setJson(): Builder = apply {
@@ -138,8 +163,8 @@ class DebugTool private constructor(
 
         }
 
-        public fun setAutoPermissionCheck(isAutoPermission: Boolean): Builder = apply {
-            this.isAutoPermission = isAutoPermission
+        public fun setAutoPermissionCheck(value: Boolean): Builder = apply {
+            this.isAutoPermission = value
         }
 
         public fun build(): DebugTool = DebugTool(

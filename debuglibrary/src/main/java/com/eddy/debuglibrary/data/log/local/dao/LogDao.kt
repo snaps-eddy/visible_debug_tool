@@ -2,6 +2,7 @@ package com.eddy.debuglibrary.data.log.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import com.eddy.debuglibrary.data.log.entity.LogEntity
 
@@ -13,9 +14,9 @@ internal interface LogDao {
     @Insert
     fun insertAllLog(logEntities: List<LogEntity>)
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     fun insertLog(logEntity: LogEntity)
 
     @Query("DELETE FROM logEntity")
-    fun deleteAllLog()
+    suspend fun deleteAllLog()
 }

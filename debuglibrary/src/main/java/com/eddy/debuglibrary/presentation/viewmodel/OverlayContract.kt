@@ -3,6 +3,7 @@ package com.eddy.debuglibrary.presentation.viewmodel
 import com.eddy.debuglibrary.presentation.base.UiEffect
 import com.eddy.debuglibrary.presentation.base.UiEvent
 import com.eddy.debuglibrary.presentation.base.UiState
+import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 
 internal class OverlayContract {
@@ -13,6 +14,7 @@ internal class OverlayContract {
         data class OnClickKeyWordItem(val keyWord: String) : Event
         data class OnSearchLog(val keyWord: String): Event
         object DeleteLog: Event
+        data class ApplyLogForm(val logForm: List<LogForm>): Event
     }
 
     data class State(

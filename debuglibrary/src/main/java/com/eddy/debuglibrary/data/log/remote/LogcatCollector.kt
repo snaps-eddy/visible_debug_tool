@@ -20,7 +20,7 @@ internal class LogcatCollector {
 
     fun collect(): Flow<String> {
         val pid = android.os.Process.myPid()
-        val commandArray = mutableListOf("logcat", "-v", "time", "--pid=$pid", "-s","*:D")
+        val commandArray = mutableListOf("logcat", "-v", "time", "--pid=$pid")
 
         val process = Runtime.getRuntime().exec(commandArray.toTypedArray())
         val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))

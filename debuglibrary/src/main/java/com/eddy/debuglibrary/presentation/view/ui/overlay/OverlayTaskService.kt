@@ -12,9 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.eddy.debuglibrary.di.AppContainer
 import com.eddy.debuglibrary.di.DiManager
+import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayContract
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @SuppressLint("ClickableViewAccessibility")
 internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
@@ -61,7 +63,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.effect.collect {
+                viewModel.effect.distinctUntilChanged().collect {
                     when (it) {
                         is OverlayContract.SideEffect.FetchLogs -> {
                             view.addLogTextView(it.log)
@@ -81,6 +83,10 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
 
     internal fun setTagList(tags: List<String>) {
         view.setTagSpinnerAdapter(tags)
+    }
+
+    internal fun setLogFrom(logForm: List<LogForm>) {
+        viewModel.setEvent(OverlayContract.Event.ApplyLogForm(logForm))
     }
 
     private fun onClickClose() {

@@ -7,5 +7,5 @@ internal interface LogRepository {
 
     fun getLogcatData(filterWord: String): Flow<List<LogModel>>
     fun clearLog()
-    fun deleteLogData()
+    suspend fun deleteLogData()
 }

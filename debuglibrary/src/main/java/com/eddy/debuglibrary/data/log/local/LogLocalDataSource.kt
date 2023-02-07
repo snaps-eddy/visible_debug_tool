@@ -7,6 +7,6 @@ internal interface LogLocalDataSource {
     fun insertLog(logEntity: LogEntity)
     fun getAllLog(): Flow<List<LogEntity>>
     fun insertAllLog(logEntities: List<LogEntity>)
-    fun deleteAllLog()
+    suspend fun deleteAllLog()
 
 }

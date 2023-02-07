@@ -9,14 +9,11 @@ import android.util.AttributeSet
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.*
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
-import com.eddy.debuglibrary.domain.log.model.LogLevel
-import com.eddy.debuglibrary.domain.log.model.LogModel
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 import com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy.LogController
 import com.example.debuglibrary.R
@@ -75,13 +72,13 @@ internal class OverlayTaskView @JvmOverloads constructor(
             tvLog.text = logEvents[position]
             callback.onClickTagItem.invoke(logEvents[position])
             rvLog.removeAllViewsInLayout()
+
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
 
         }
     }
-
 
     private var isScrollBottom = false
 
@@ -95,12 +92,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     fun init() {
-        rvLog.apply {
-            setController(logController)
-            layoutManager = LinearLayoutManager(context).apply {
-                orientation = LinearLayoutManager.VERTICAL
-            }
-        }
+        setRv()
         setClickListener()
     }
 
@@ -115,49 +107,11 @@ internal class OverlayTaskView @JvmOverloads constructor(
         windowManager.addView(rootView, rootViewParams)
     }
 
-    private fun createLogTextView(log: LogModel): TextView {
-        return when (log.logLevel) {
-            LogLevel.V -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_v_color))
-                }
-            }
-            LogLevel.D -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_d_color))
-                }
-            }
-            LogLevel.I -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_i_color))
-                }
-            }
-            LogLevel.W -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_w_color))
-                }
-            }
-            LogLevel.E -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_e_color))
-                }
-            }
-            LogLevel.F -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_e_color))
-                }
-            }
-            LogLevel.S -> {
-                TextView(context).apply {
-                    text = log.content
-                    setTextColor(ContextCompat.getColor(context, R.color.log_level_i_color))
-                }
+    private fun setRv() {
+        rvLog.apply {
+            setController(logController)
+            layoutManager = LinearLayoutManager(context).apply {
+                orientation = LinearLayoutManager.VERTICAL
             }
         }
     }
@@ -166,7 +120,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private fun setClickListener() {
         ivTrashLog.setOnClickListener {
             callback.onClickDelete.invoke()
-            rvLog.removeAllViewsInLayout()
+            logController.setData(listOf())
         }
 
         btnMenu.setOnClickListener {
@@ -186,6 +140,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
             windowManager.removeView(rootView)
             true
         }
+
         cbZoom.setOnClickListener {
             if (cbZoom.isChecked) {
                 rvLog.updateLayoutParams {
@@ -199,14 +154,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 }
             }
         }
-
-//        rvLog.viewTreeObserver.addOnGlobalLayoutListener {
-//            rvLog.post {
-//                if (isScrollBottom) {
-//                    rvLog.fullScroll(ScrollView.FOCUS_DOWN)
-//                }
-//            }
-//        }
         rvLog.setOnScrollChangeListener { _, _, _, _, _ ->
             isScrollBottom = !rvLog.canScrollVertically(1)
         }
@@ -245,6 +192,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         cbZoom.isChecked = true
         ivTrashLog.isVisible = false
         tvLog.text = resources.getText(R.string.log)
+        rvLog.removeAllViewsInLayout()
 
         val moveLayoutParams = ivMove.layoutParams as RelativeLayout.LayoutParams
         moveLayoutParams.removeRule(RelativeLayout.LEFT_OF)

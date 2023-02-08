@@ -46,6 +46,11 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         return binder
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        view.onDestroyView()
+        return super.onUnbind(intent)
+    }
+
     private fun initObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -56,7 +61,6 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
                             view.init()
                         }
                     }
-
                 }
             }
         }

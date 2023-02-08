@@ -84,7 +84,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
     fun addLogTextView(log: List<LogUiModel>) {
         logController.setData(log)
-        if(isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
+        if (isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
     }
 
     fun searchLog(log: String) {
@@ -105,6 +105,10 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
     fun onCreateView() {
         windowManager.addView(rootView, rootViewParams)
+    }
+
+    fun onDestroyView() {
+        windowManager.removeView(rootView)
     }
 
     private fun setRv() {
@@ -133,11 +137,10 @@ internal class OverlayTaskView @JvmOverloads constructor(
             callback.onClickClose.invoke()
         }
 
-        tvLog.setOnClickListener { if(isExpandView.not()) applyExpandView() }
+        tvLog.setOnClickListener { if (isExpandView.not()) applyExpandView() }
 
         rootView.setOnLongClickListener {
             callback.onLongClickCloseService.invoke()
-            windowManager.removeView(rootView)
             true
         }
 

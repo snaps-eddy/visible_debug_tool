@@ -2,13 +2,10 @@ package com.eddy.debuglibrary.presentation.view.ui.permission
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Window
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.eddy.debuglibrary.di.AppContainer

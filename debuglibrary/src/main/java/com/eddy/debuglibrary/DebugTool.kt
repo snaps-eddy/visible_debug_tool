@@ -12,13 +12,12 @@ import android.widget.Toast
 import androidx.annotation.RequiresPermission
 import com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService
 import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity
-import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionEvent
 import com.eddy.debuglibrary.util.Constants
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_DEBUG_TOOL_BOOLEAN_TOKEN
+import com.eddy.debuglibrary.util.EventBusManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 
 @JvmSynthetic
 public inline fun createDebugTool(
@@ -34,6 +33,26 @@ class DebugTool private constructor(
     private lateinit var myService: OverlayTaskService
     private var isService = false
     private val sharedPreferences = context.getSharedPreferences(Constants.SharedPreferences.EDDY_DEBUG_TOOL, Context.MODE_PRIVATE)
+
+    private val eventBusCallback by lazy {
+        object : EventBusCallback {
+            override fun allow() {
+                Toast.makeText(context, "권한 허용", Toast.LENGTH_SHORT).show()
+                startService()
+            }
+
+            override fun deny() {
+                Toast.makeText(context, "권한 거절.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun neverDeny() {
+                Toast.makeText(context, "권한 영구 거절.", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    private val eventBusManager by lazy { EventBusManager(eventBusCallback) }
 
     @RequiresPermission(Manifest.permission.SYSTEM_ALERT_WINDOW)
     fun bindService() {
@@ -60,11 +79,12 @@ class DebugTool private constructor(
         if (builder.isAutoPermission && isNeverSeeAgain.not()) {
             if (!Settings.canDrawOverlays(context)) {
                 val intent = Intent(context, PermissionActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
-                EventBus.getDefault().register(this)
+                EventBus.getDefault().register(eventBusManager)
                 return false
             } else {
-                EventBus.getDefault().unregister(this)
+                EventBus.getDefault().unregister(eventBusManager)
                 return true
             }
         } else {
@@ -90,24 +110,6 @@ class DebugTool private constructor(
 
         override fun onServiceDisconnected(name: ComponentName) {
             isService = false
-        }
-    }
-
-
-    @Subscribe
-    @JvmSynthetic
-    internal fun permissionEventHandler(event: PermissionEvent) {
-        when (event) {
-            PermissionEvent.Allow -> {
-                Toast.makeText(context, "권한 허용", Toast.LENGTH_SHORT).show()
-                startService()
-            }
-            PermissionEvent.Deny -> {
-                Toast.makeText(context, "권한 거절.", Toast.LENGTH_SHORT).show()
-            }
-            PermissionEvent.NeverDeny -> {
-                Toast.makeText(context, "권한 영구 거절.", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 

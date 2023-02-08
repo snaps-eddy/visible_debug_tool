@@ -17,9 +17,9 @@ internal class LogRepositoryImpl(
     private val exceptChar =
         listOf(
             "WifiMulticast", "WifiHW", "MtpService", "PushClient", "ViewRootImpl", "InputTransport", "InputMethodManager", "mali|TextView", "activityThread", "TrafficStats",
-            "tagSocket", "ConversionRepoter", "nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium", "CCodec", "Codec2Client", "ReflectedParamUpdater",
+            "tagSocket", "ConversionRepoter", "nativeloader", "DecorView", "BLASTBufferQueue", "OpenGLRenderer", "chromium", "CCodec", "Codec2", "ReflectedParamUpdater",
             "ColorUtils", "MediaCodec", "SurfaceUtils", "CCodecBufferChannel", "BufferQueueProducer", "cr_MediaCodecBridge", "BufferPoolAccessor","beginning of main", "StudioTransport",
-            "SmartClipRemoteRequestDispatcher"
+            "SmartClipRemoteRequestDispatcher","hw-BpHwBinder","choreogra"
         )
 
     override fun getLogcatData(filterWord: String): Flow<List<LogModel>> {

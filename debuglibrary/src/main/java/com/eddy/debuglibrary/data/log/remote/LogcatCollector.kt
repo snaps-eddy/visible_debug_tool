@@ -1,13 +1,9 @@
 package com.eddy.debuglibrary.data.log.remote
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 
 internal class LogcatCollector {
 
@@ -20,32 +16,36 @@ internal class LogcatCollector {
 
     fun collect(): Flow<String> {
         val pid = android.os.Process.myPid()
-        val commandArray = mutableListOf("logcat", "-v", "time", "--pid=$pid")
+        val commandArray = mutableListOf("logcat", "-v", "long", "--pid=$pid")
 
-        val process = Runtime.getRuntime().exec(commandArray.toTypedArray())
-        val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+        val process = ProcessBuilder()
+            .command(commandArray)
+            .redirectErrorStream(true)
+            .start()
 
-        return internalCollect(bufferedReader)
+        return internalCollect(process)
     }
 
     private fun internalCollect(
-        bufferedReader: BufferedReader
+        process: Process
     ): Flow<String> = flow {
-        try {
-            var line: String?
-            val separator = System.getProperty("line.separator")
-            while (bufferedReader.readLine().also { line = it } != null) {
-                emit(line + separator)
+        val sb = StringBuilder()
+        val separator = System.lineSeparator()
+
+        process
+            .inputStream
+            .bufferedReader()
+            .useLines { lines ->
+                lines.forEach { newLine ->
+                    if (newLine.isBlank()) {
+                        emit(sb.toString())
+                        sb.clear()
+                    } else {
+                        sb.append(newLine).append(separator)
+                    }
+                }
             }
-        } catch (e: IOException) {
-            e.message?.let { Log.e(TAG, it) }
-        }
     }
         .flowOn(Dispatchers.IO)
-
-
-    companion object {
-        const val TAG = "LogCatCollector"
-    }
 
 }

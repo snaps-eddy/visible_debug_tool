@@ -95,6 +95,7 @@ class DebugTool private constructor(
 
 
     @Subscribe
+    @JvmSynthetic
     internal fun permissionEventHandler(event: PermissionEvent) {
         when (event) {
             PermissionEvent.Allow -> {

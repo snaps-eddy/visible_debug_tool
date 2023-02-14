@@ -7,25 +7,21 @@
     android:background="@color/white"
     tools:context="com.eddy.webling_debug_tool.MainActivity">
 
-    <TextView
-        android:id="@+id/textlknlk"
-        android:layout_width="366dp"
-        android:layout_height="627dp"
-        android:text="TextView \n sdfdsf \n sdfsdf \n sdfsdf \n sdfsdf \n sdfsdf \n sdfsdf \n sdf sdfs\n sdf sdfsd f\n sdf sdf s\n sdf sdf\n sdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsdfsdf\nsfsfadzdf\nzsdf"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="188dp"
-        android:text="close Button"
-        app:layout_constraintBottom_toBottomOf="@+id/textlknlk"
-        app:layout_constraintEnd_toEndOf="@+id/textlknlk"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toStartOf="@+id/textlknlk" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/ic_launcher"
+        />
+
+<!--    <Button-->
+<!--        android:id="@+id/button2"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="188dp"-->
+<!--        android:text="close Button"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/textlknlk"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/textlknlk"-->
+<!--        app:layout_constraintHorizontal_bias="0.091"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/textlknlk" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

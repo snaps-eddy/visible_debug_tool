@@ -1,6 +1,6 @@
 package com.eddy.debuglibrary
 
-internal interface EventBusCallback {
+internal interface PermissionCallback {
     fun allow()
     fun deny()
     fun neverDeny()

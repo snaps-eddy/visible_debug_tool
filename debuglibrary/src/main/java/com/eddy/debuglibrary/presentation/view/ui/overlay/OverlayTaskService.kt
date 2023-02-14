@@ -28,7 +28,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     }
 
     private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
-    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase, appContainer.deleteLogUseCase) }
+    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase, appContainer.deleteLogUseCase, appContainer.resourceProvider) }
 
     private val binder = OverlayDebugToolPopUpBinder()
     private val view: OverlayTaskView by lazy { OverlayTaskView(context = applicationContext, callback = this) }
@@ -88,6 +88,14 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     internal fun setTagList(tags: List<String>) {
         view.setTagSpinnerAdapter(tags)
     }
+
+    internal fun setSettingView(isSettingView: Boolean) {
+        view.setSettingView(isSettingView)
+    }
+
+//    internal fun setBackgroundColor(@ColorInt color: Int) {
+//        view.setBackgroundColor()
+//    }
 
     internal fun setLogFrom(logForm: List<LogForm>) {
         viewModel.setEvent(OverlayContract.Event.ApplyLogForm(logForm))

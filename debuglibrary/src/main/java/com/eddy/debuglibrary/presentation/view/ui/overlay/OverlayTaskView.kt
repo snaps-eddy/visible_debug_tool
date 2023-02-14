@@ -2,6 +2,8 @@ package com.eddy.debuglibrary.presentation.view.ui.overlay
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Build
@@ -9,6 +11,7 @@ import android.util.AttributeSet
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleService
@@ -16,7 +19,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 import com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy.LogController
+import com.eddy.debuglibrary.presentation.view.ui.setting.SettingActivity
+import com.eddy.debuglibrary.presentation.view.ui.setting.SettingEvent
+import com.eddy.debuglibrary.util.Constants
 import com.example.debuglibrary.R
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 internal class OverlayTaskView @JvmOverloads constructor(
     context: Context,
@@ -25,6 +33,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val callback: OverlayTaskCallback
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
+    private val sharedPreferences: SharedPreferences by lazy { context.getSharedPreferences(Constants.SharedPreferences.EDDY_DEBUG_TOOL, Context.MODE_PRIVATE) }
     private val rootView: RelativeLayout by lazy { inflate.inflate(R.layout.view_in_overlay_popup, null) as RelativeLayout }
     private val windowManager: WindowManager by lazy { context.getSystemService(LifecycleService.WINDOW_SERVICE) as WindowManager }
     private val rootViewParams: WindowManager.LayoutParams by lazy {
@@ -55,10 +64,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private lateinit var logEvents: List<String>
 
     private val inflate: LayoutInflater by lazy { context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
-//    private val svLog: NestedScrollView by lazy { rootView.findViewById(R.id.sv_logs) }
-//    private val logContainer: LinearLayout by lazy { rootView.findViewById(R.id.log_view_container) }
     private val ivMove: ImageView by lazy { rootView.findViewById(R.id.iv_move) }
-    private val btnMenu: ImageButton by lazy { rootView.findViewById(R.id.btn_menu) }
+    private val ivSetting: ImageView by lazy { rootView.findViewById(R.id.iv_setting) }
     private val tvLog: TextView by lazy { rootView.findViewById(R.id.tv_log) }
     private val ivClose: ImageView by lazy { rootView.findViewById(R.id.iv_close) }
     private val cbZoom: CheckBox by lazy { rootView.findViewById(R.id.cb_zoom) }
@@ -67,12 +74,13 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val logController: LogController by lazy { LogController() }
     private val rvLog: EpoxyRecyclerView by lazy { rootView.findViewById(R.id.rv_logs) }
 
+    private var isSettingView: Boolean = false
+
     private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             tvLog.text = logEvents[position]
             callback.onClickTagItem.invoke(logEvents[position])
             rvLog.removeAllViewsInLayout()
-
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -92,6 +100,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     fun init() {
+        EventBus.getDefault().register(this@OverlayTaskView)
         setRv()
         setClickListener()
     }
@@ -99,11 +108,17 @@ internal class OverlayTaskView @JvmOverloads constructor(
     fun setTagSpinnerAdapter(tags: List<String>) {
         logEvents = tags
 
-        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
-        spLog.adapter = adapter
+        spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
+    }
+
+    fun setSettingView(isSettingView: Boolean) {
+        this.isSettingView = isSettingView
     }
 
     fun onCreateView() {
+        if(sharedPreferences.getBoolean(Constants.SharedPreferences.EDDY_SETTING_BACKGROUND,false)) rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.default_app_color))
+        else rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent_gray))
+
         windowManager.addView(rootView, rootViewParams)
     }
 
@@ -127,7 +142,12 @@ internal class OverlayTaskView @JvmOverloads constructor(
             logController.setData(listOf())
         }
 
-        btnMenu.setOnClickListener {
+        ivSetting.setOnClickListener {
+            onDestroyView()
+
+            val intent = Intent(context, SettingActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
 
         }
 
@@ -140,6 +160,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         tvLog.setOnClickListener { if (isExpandView.not()) applyExpandView() }
 
         rootView.setOnLongClickListener {
+            EventBus.getDefault().unregister(this@OverlayTaskView)
             callback.onLongClickCloseService.invoke()
             true
         }
@@ -164,14 +185,21 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     private fun applyExpandView() {
-        rvLog.updateLayoutParams {
-            width = Resources.getSystem().displayMetrics.widthPixels
-            height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
+        rvLog.apply {
+            updateLayoutParams {
+                width = Resources.getSystem().displayMetrics.widthPixels
+                height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
+            }
+            isVisible = true
+
+//            if(sharedPreferences.getBoolean(Constants.SharedPreferences.EDDY_SETTING_BACKGROUND,false)) setBackgroundColor(ContextCompat.getColor(context, R.color.default_app_color))
         }
+
+        ivSetting.isVisible = true
         isExpandView = true
         ivClose.isVisible = true
         spLog.isVisible = true
-        rvLog.isVisible = true
+
         cbZoom.isVisible = true
         cbZoom.isChecked = false
         ivTrashLog.isVisible = true
@@ -187,6 +215,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     private fun applyContractView() {
+        ivSetting.isVisible = false
         isExpandView = false
         ivClose.isVisible = false
         spLog.isVisible = false
@@ -225,5 +254,15 @@ internal class OverlayTaskView @JvmOverloads constructor(
         }
         return@OnTouchListener false
     }
+
+    @Subscribe
+    fun settingEventHandler(event: SettingEvent) {
+        when (event) {
+            SettingEvent.OnBackPress -> {
+                onCreateView()
+            }
+        }
+    }
+
 
 }

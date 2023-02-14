@@ -5,7 +5,7 @@ import com.example.debuglibrary.R
 
 internal data class LogUiModel(
     val content: String,
-    val contentLevel: LogLevel
+    val contentLevel: LogLevel,
 ) {
     var contentColor = when (contentLevel) {
         LogLevel.V -> { R.color.log_level_v_color }

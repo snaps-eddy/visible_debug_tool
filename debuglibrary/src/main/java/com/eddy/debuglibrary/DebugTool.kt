@@ -100,10 +100,6 @@ class DebugTool private constructor(
             isService = true
 
             myService = binder.getService()
-            myService.setTagList(builder._searchKeyWords)
-//            myService.setBackgroundColor(builder.backgroundColor)
-//            myService.setLogFrom(builder._logForm)
-//            myService.setSettingView(builder.isSettingView)
             myService.setUnBindServiceCallback(::unbindService)
         }
 
@@ -113,49 +109,8 @@ class DebugTool private constructor(
     }
 
     public class Builder(private val context: Context) {
-
-        @set:JvmSynthetic
-        public var searchKeyWords: List<String>? = null
-
-        internal val _searchKeyWords: MutableList<String>
-            get() {
-                return searchKeyWords?.let {
-                    mutableListOf("normal").run {
-                        addAll(it)
-                        this
-                    }
-                } ?: mutableListOf("normal")
-
-            }
-
         @set:JvmSynthetic
         public var isAutoPermission: Boolean = false
-
-        @set:JvmSynthetic
-        public var isSettingView: Boolean = false
-
-//        @set:JvmSynthetic/**/
-//        public var logLevel: LogLevel = LogLevel.D
-
-//        internal val _logForm: List<LogForm> = listOf(LogForm(textColors, logLevel))
-
-
-//        public fun setLogLevelTextColor(color: Int, logLevel: LogLevel): Builder = apply {
-//            this.textColors = color
-//            this.logLevel = logLevel
-//        }
-
-//        public fun setTextColors(values: List<LogForm>): Builder = apply {
-//
-//        }
-
-        public fun setSearchKeyWord(value: String): Builder = apply {
-            this.searchKeyWords = listOf(value)
-        }
-
-        public fun setSearchKeyWordList(values: List<String>): Builder = apply {
-            this.searchKeyWords = values
-        }
 
         public fun setJson(): Builder = apply {
 
@@ -164,18 +119,6 @@ class DebugTool private constructor(
         public fun setJsonList(): Builder = apply {
 
         }
-
-        public fun setSettingView(value: Boolean): Builder = apply {
-            this.isSettingView = value
-        }
-
-//        public fun setBackgroundColor(@ColorInt value: Int): Builder = apply {
-//            this.backgroundColor = value
-//        }
-//
-//        public fun setBackgroundColorResource(@ColorRes value: Int): Builder = apply {
-//            this.backgroundColor = ContextCompat.getColor(context, value)
-//        }
 
         public fun setAutoPermissionCheck(value: Boolean): Builder = apply {
             this.isAutoPermission = value

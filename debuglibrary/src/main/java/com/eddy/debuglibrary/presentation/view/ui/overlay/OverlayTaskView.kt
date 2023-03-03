@@ -22,7 +22,10 @@ import com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy.LogController
 import com.eddy.debuglibrary.presentation.view.ui.setting.SettingActivity
 import com.eddy.debuglibrary.presentation.view.ui.setting.SettingEvent
 import com.eddy.debuglibrary.util.Constants
+import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_LOG_FILTER_KEYWORD
 import com.example.debuglibrary.R
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -103,12 +106,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         EventBus.getDefault().register(this@OverlayTaskView)
         setRv()
         setClickListener()
-    }
-
-    fun setTagSpinnerAdapter(tags: List<String>) {
-        logEvents = tags
-
-        spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
+        getFilterKeywordList()
     }
 
     fun setSettingView(isSettingView: Boolean) {
@@ -116,9 +114,15 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     fun onCreateView() {
-        if(sharedPreferences.getBoolean(Constants.SharedPreferences.EDDY_SETTING_BACKGROUND,false)) rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.default_app_color))
+        if (sharedPreferences.getBoolean(Constants.SharedPreferences.EDDY_SETTING_BACKGROUND, false)) {
+            rvLog.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.default_app_color
+                )
+            )
+        }
         else rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent_gray))
-
         windowManager.addView(rootView, rootViewParams)
     }
 
@@ -153,7 +157,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
         ivMove.setOnTouchListener(viewMoveListener)
         ivClose.setOnClickListener {
-            applyContractView()
+            applyCollapseView()
             callback.onClickClose.invoke()
         }
 
@@ -185,6 +189,9 @@ internal class OverlayTaskView @JvmOverloads constructor(
     }
 
     private fun applyExpandView() {
+        getFilterKeywordList()
+        spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
+
         rvLog.apply {
             updateLayoutParams {
                 width = Resources.getSystem().displayMetrics.widthPixels
@@ -192,7 +199,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
             }
             isVisible = true
 
-//            if(sharedPreferences.getBoolean(Constants.SharedPreferences.EDDY_SETTING_BACKGROUND,false)) setBackgroundColor(ContextCompat.getColor(context, R.color.default_app_color))
         }
 
         ivSetting.isVisible = true
@@ -214,7 +220,21 @@ internal class OverlayTaskView @JvmOverloads constructor(
         callback.onClickTagItem.invoke("normal")
     }
 
-    private fun applyContractView() {
+    private fun getFilterKeywordList(){
+        val stringPrefs = sharedPreferences.getString(EDDY_LOG_FILTER_KEYWORD, null)
+        var arrayListPrefs: List<String>
+        if(stringPrefs != null && stringPrefs != "[]"){
+            arrayListPrefs = GsonBuilder().create().fromJson(
+                stringPrefs, object: TypeToken<ArrayList<String>>(){}.type
+            )
+            logEvents = arrayListPrefs
+
+            spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
+        }
+    }
+
+
+    private fun applyCollapseView() {
         ivSetting.isVisible = false
         isExpandView = false
         ivClose.isVisible = false
@@ -233,6 +253,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
         windowManager.updateViewLayout(rootView, rootViewParams)
     }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private val viewMoveListener = OnTouchListener { _, event ->
@@ -260,6 +281,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         when (event) {
             SettingEvent.OnBackPress -> {
                 onCreateView()
+                getFilterKeywordList()
             }
         }
     }

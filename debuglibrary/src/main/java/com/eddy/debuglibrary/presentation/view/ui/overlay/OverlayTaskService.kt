@@ -1,7 +1,9 @@
 package com.eddy.debuglibrary.presentation.view.ui.overlay
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Binder
 import android.os.IBinder
 import android.view.*
@@ -15,6 +17,9 @@ import com.eddy.debuglibrary.di.DiManager
 import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayContract
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
+import com.eddy.debuglibrary.util.Constants
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -28,7 +33,8 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     }
 
     private val appContainer: AppContainer by lazy { DiManager.getInstance(this).appContainer }
-    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase, appContainer.deleteLogUseCase) }
+    private val viewModel: OverlayTaskViewModel by lazy { OverlayTaskViewModel(appContainer.getLogcatUseCase, appContainer.clearLogUseCase, appContainer.deleteLogUseCase, appContainer.resourceProvider) }
+    private val sharedPreferences: SharedPreferences by lazy {getSharedPreferences(Constants.SharedPreferences.EDDY_DEBUG_TOOL, Context.MODE_PRIVATE)}
 
     private val binder = OverlayDebugToolPopUpBinder()
     private val view: OverlayTaskView by lazy { OverlayTaskView(context = applicationContext, callback = this) }
@@ -39,6 +45,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         super.onCreate()
         view.onCreateView()
         initObservers()
+        saveFilterKeywordList()
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -70,7 +77,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
                 viewModel.effect.distinctUntilChanged().collect {
                     when (it) {
                         is OverlayContract.SideEffect.FetchLogs -> {
-                            view.addLogTextView(it.log)
+                            view.addLogTextView(it.logs)
                         }
                         is OverlayContract.SideEffect.SearchLog -> {
                             view.searchLog(it.word)
@@ -81,16 +88,25 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         }
     }
 
+    private fun saveFilterKeywordList() {
+        if(sharedPreferences.getString(Constants.SharedPreferences.EDDY_LOG_FILTER_KEYWORD, null) == null) {
+            var arrayListPrefs = ArrayList<String>() // 저장할 ArrayList
+            var stringPrefs : String? = null // 저장할 때 사용할 문자열 변수
+            // ArrayList에 추가
+            arrayListPrefs.add(0, "normal")
+            stringPrefs = GsonBuilder().create().toJson(
+                arrayListPrefs,
+                object : TypeToken<ArrayList<String>>() {}.type
+            )
+            sharedPreferences.edit().apply {
+                putString(Constants.SharedPreferences.EDDY_LOG_FILTER_KEYWORD, stringPrefs) // SharedPreferences에 push
+                apply() // SharedPreferences 적용
+            }
+        }
+    }
+
     internal fun setUnBindServiceCallback(block: () -> Unit) {
         this.unBindCallback = block
-    }
-
-    internal fun setTagList(tags: List<String>) {
-        view.setTagSpinnerAdapter(tags)
-    }
-
-    internal fun setLogFrom(logForm: List<LogForm>) {
-        viewModel.setEvent(OverlayContract.Event.ApplyLogForm(logForm))
     }
 
     private fun onClickClose() {

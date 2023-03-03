@@ -4,12 +4,18 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <application >
+    <application>
+        <activity
+            android:name="com.eddy.debuglibrary.presentation.view.ui.setting.SettingActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name="com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity"
-            android:theme="@style/Theme.Permission.Dialog"
-            android:exported="true">
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.Permission.Dialog"></activity>
 
         <service
             android:name="com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService"

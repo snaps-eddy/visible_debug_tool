@@ -30,14 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         val dd = createDebugTool(context = this) {
             setAutoPermissionCheck(true)
-            setSearchKeyWordList(tags)
         }
         dd.bindService()
-
-        findViewById<Button>(R.id.button2).setOnClickListener {
-            dd.unbindService()
-        }
-
 
     }
 

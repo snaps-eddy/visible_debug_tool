@@ -27,7 +27,7 @@ internal class OverlayContract {
 
 
     sealed interface SideEffect : UiEffect {
-        data class FetchLogs(val log : List<LogUiModel>) : SideEffect
+        data class FetchLogs(val logs : List<LogUiModel>) : SideEffect
         data class SearchLog(val word: String): SideEffect
     }
 

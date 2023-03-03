@@ -71,6 +71,7 @@ dependencies {
     def paging_version = "3.1.0"
     def gson_version ="2.8.6"
     def epoxy_Version = "4.4.0"
+    def lottie_version = "3.2.0"
 
     // epoxy
     implementation "com.airbnb.android:epoxy:$epoxy_Version"
@@ -78,6 +79,8 @@ dependencies {
     implementation "com.airbnb.android:epoxy-glide-preloading:$epoxy_Version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_Version"
 
+    //lottie
+    implementation "com.airbnb.android:lottie:$lottie_version"
 //
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
@@ -96,7 +99,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$scope_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     implementation "com.google.code.gson:gson:$gson_version"
 

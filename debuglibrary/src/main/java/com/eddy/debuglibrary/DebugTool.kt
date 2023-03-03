@@ -1,11 +1,7 @@
 package com.eddy.debuglibrary
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.graphics.Color
+import android.content.*
 import android.os.IBinder
 import android.provider.Settings
 import android.widget.Toast
@@ -14,7 +10,7 @@ import com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService
 import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity
 import com.eddy.debuglibrary.util.Constants
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_DEBUG_TOOL_BOOLEAN_TOKEN
-import com.eddy.debuglibrary.util.EventBusManager
+import com.eddy.debuglibrary.util.PermissionEventManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.greenrobot.eventbus.EventBus
@@ -32,10 +28,11 @@ class DebugTool private constructor(
 
     private lateinit var myService: OverlayTaskService
     private var isService = false
+
     private val sharedPreferences = context.getSharedPreferences(Constants.SharedPreferences.EDDY_DEBUG_TOOL, Context.MODE_PRIVATE)
 
-    private val eventBusCallback by lazy {
-        object : EventBusCallback {
+    private val permissionCallback by lazy {
+        object : PermissionCallback {
             override fun allow() {
                 Toast.makeText(context, "권한 허용", Toast.LENGTH_SHORT).show()
                 startService()
@@ -52,7 +49,7 @@ class DebugTool private constructor(
         }
     }
 
-    private val eventBusManager by lazy { EventBusManager(eventBusCallback) }
+    private val permissionEventManager by lazy { PermissionEventManager(permissionCallback) }
 
     @RequiresPermission(Manifest.permission.SYSTEM_ALERT_WINDOW)
     fun bindService() {
@@ -81,10 +78,10 @@ class DebugTool private constructor(
                 val intent = Intent(context, PermissionActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
-                EventBus.getDefault().register(eventBusManager)
+                EventBus.getDefault().register(permissionEventManager)
                 return false
             } else {
-                EventBus.getDefault().unregister(eventBusManager)
+                EventBus.getDefault().unregister(permissionEventManager)
                 return true
             }
         } else {
@@ -103,8 +100,6 @@ class DebugTool private constructor(
             isService = true
 
             myService = binder.getService()
-            myService.setTagList(builder._searchKeyWords)
-//            myService.setLogFrom(builder._logForm)
             myService.setUnBindServiceCallback(::unbindService)
         }
 
@@ -114,49 +109,8 @@ class DebugTool private constructor(
     }
 
     public class Builder(private val context: Context) {
-
-        @set:JvmSynthetic
-        public var searchKeyWords: List<String>? = null
-
-        internal val _searchKeyWords: MutableList<String>
-            get() {
-                return searchKeyWords?.let {
-                    mutableListOf("normal").run {
-                        addAll(it)
-                        this
-                    }
-                } ?: mutableListOf("normal")
-
-            }
-
         @set:JvmSynthetic
         public var isAutoPermission: Boolean = false
-
-        @set:JvmSynthetic
-        public var textColors: Int = Color.BLACK
-
-//        @set:JvmSynthetic/**/
-//        public var logLevel: LogLevel = LogLevel.D
-
-//        internal val _logForm: List<LogForm> = listOf(LogForm(textColors, logLevel))
-
-
-//        public fun setLogLevelTextColor(color: Int, logLevel: LogLevel): Builder = apply {
-//            this.textColors = color
-//            this.logLevel = logLevel
-//        }
-
-//        public fun setTextColors(values: List<LogForm>): Builder = apply {
-//
-//        }
-
-        public fun setSearchKeyWord(value: String): Builder = apply {
-            this.searchKeyWords = listOf(value)
-        }
-
-        public fun setSearchKeyWordList(values: List<String>): Builder = apply {
-            this.searchKeyWords = values
-        }
 
         public fun setJson(): Builder = apply {
 

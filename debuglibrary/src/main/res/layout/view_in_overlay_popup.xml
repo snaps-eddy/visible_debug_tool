@@ -113,6 +113,16 @@
             android:layout_toLeftOf="@+id/iv_trash_log"
             android:src="@drawable/background" />
 
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:visibility="gone"
+            android:layout_toRightOf="@+id/sp_log"
+            android:src="@drawable/search" />
 
     </RelativeLayout>
 
@@ -124,28 +134,6 @@
         android:orientation="vertical"
         android:background="@color/transparent_gray"
         android:layout_below="@id/rl_header">
-
-<!--        <androidx.core.widget.NestedScrollView-->
-<!--            android:id="@+id/sv_logs"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:maxHeight="300dp"-->
-<!--            android:overScrollMode="never"-->
-<!--            android:scrollbars="vertical"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHeight_max="300dp"-->
-<!--            app:layout_constraintHorizontal_bias="0.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent" >-->
-
-<!--            <LinearLayout-->
-<!--                android:id="@+id/log_view_container"-->
-<!--                android:orientation="vertical"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content">-->
-<!--            </LinearLayout>-->
-
-<!--        </androidx.core.widget.NestedScrollView>-->
 
         <com.airbnb.epoxy.EpoxyRecyclerView
             android:id="@+id/rv_logs"
@@ -159,6 +147,46 @@
             app:layout_constraintHeight_max="300dp"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/ly_search_tool"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:background="@color/teal_200"
+            android:layout_height="40dp">
+
+            <TextView
+                android:id="@+id/tv_search_keyword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="13sp"
+                android:text="테스트 텍스트"
+                android:textAlignment="center"/>
+
+
+            <ImageButton
+                android:id="@+id/iv_up"
+                android:layout_weight="0.2"
+                android:layout_margin="2dp"
+                android:background="@drawable/up_arrow"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+
+            <ImageButton
+                android:id="@+id/iv_down"
+                android:layout_weight="0.2"
+                android:layout_margin="2dp"
+                android:background="@drawable/down_arrow"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+        </LinearLayout>
+
     </LinearLayout>
+
+
 
 </RelativeLayout>

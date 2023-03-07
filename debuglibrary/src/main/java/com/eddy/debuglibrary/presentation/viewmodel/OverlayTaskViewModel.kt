@@ -1,11 +1,11 @@
 package com.eddy.debuglibrary.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.eddy.debuglibrary.domain.log.usecase.ClearLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.DeleteLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.GetLogcatUseCase
 import com.eddy.debuglibrary.presentation.base.BaseViewModel
-import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 import com.eddy.debuglibrary.util.ResourceProvider
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,6 @@ internal class OverlayTaskViewModel(
     ) : BaseViewModel<OverlayContract.Event, OverlayContract.State, OverlayContract.SideEffect>() {
 
     private lateinit var job: Job
-    private lateinit var logForms: List<LogForm>
 
     fun requestLogcats(searchTag: String) {
         cancelJob()
@@ -61,24 +60,14 @@ internal class OverlayTaskViewModel(
 
     override fun handleEvent(event: OverlayContract.Event) {
         when (event) {
-            is OverlayContract.Event.OnCloseClick -> {
-                setState { copy(logsState = OverlayContract.LogsState.Idle) }
-            }
-            is OverlayContract.Event.OnClickKeyWordItem -> {
-                requestLogcats(event.keyWord)
-            }
-            is OverlayContract.Event.OnSearchLog -> {
-                setEffect { OverlayContract.SideEffect.SearchLog(event.keyWord) }
-            }
-            is OverlayContract.Event.OnClearClick -> {
-                clearLog()
-            }
-            is OverlayContract.Event.DeleteLog -> {
-                deleteLog()
-            }
-            is OverlayContract.Event.ApplyLogForm -> {
-                logForms = event.logForm
-            }
+            is OverlayContract.Event.OnCloseClick -> setState { copy(logsState = OverlayContract.LogsState.Idle) }
+
+            is OverlayContract.Event.OnClickKeyWordItem -> requestLogcats(event.keyWord)
+
+            is OverlayContract.Event.OnClearClick -> clearLog()
+
+            is OverlayContract.Event.DeleteLog -> deleteLog()
+
         }
     }
 

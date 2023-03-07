@@ -12,9 +12,7 @@ internal class OverlayContract {
         object OnCloseClick: Event
         object OnClearClick: Event
         data class OnClickKeyWordItem(val keyWord: String) : Event
-        data class OnSearchLog(val keyWord: String): Event
         object DeleteLog: Event
-        data class ApplyLogForm(val logForm: List<LogForm>): Event
     }
 
     data class State(
@@ -28,7 +26,6 @@ internal class OverlayContract {
 
     sealed interface SideEffect : UiEffect {
         data class FetchLogs(val logs : List<LogUiModel>) : SideEffect
-        data class SearchLog(val word: String): SideEffect
     }
 
 }

@@ -3,11 +3,13 @@ package com.eddy.debuglibrary.presentation.view.ui.setting
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eddy.debuglibrary.presentation.view.ui.setting.epoxy.LogKeywordController
@@ -90,14 +92,18 @@ internal class SettingActivity : AppCompatActivity() {
     }
 
     private fun saveFilterKeywordList(keyword: String) {
-        arrayListPrefs.add(0, keyword)
-        stringPrefs = GsonBuilder().create().toJson(
-            arrayListPrefs,
-            object : TypeToken<ArrayList<String>>() {}.type
-        )
-        sharedPreferences.edit().apply {
-            putString(EDDY_LOG_FILTER_KEYWORD, stringPrefs)
-            apply()
+        if(!arrayListPrefs.contains(keyword)) {
+            arrayListPrefs.add(0, keyword)
+            stringPrefs = GsonBuilder().create().toJson(
+                arrayListPrefs,
+                object : TypeToken<ArrayList<String>>() {}.type
+            )
+            sharedPreferences.edit().apply {
+                putString(EDDY_LOG_FILTER_KEYWORD, stringPrefs)
+                apply()
+            }
+        } else {
+            Toast.makeText(this, "이미 등록 되어 있는 키워드 입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

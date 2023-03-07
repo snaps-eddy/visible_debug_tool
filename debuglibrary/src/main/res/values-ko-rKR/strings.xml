@@ -9,5 +9,6 @@
     <string name="change_background_color">배경 진하게</string>
     <string name="change_text_size">텍스트 크기 변경</string>
     <string name="save_filter_keyword">필터링 키워드 등록</string>
-    <string name="add_to_search_filter">필터 키워드를 입력 해 주세요.</string>
+    <string name="add_to_search_filter">필터 키워드를 입력해 주세요.</string>
+    <string name="enter_search_keyword">검색어를 입력해 주세요.</string>
 </resources>

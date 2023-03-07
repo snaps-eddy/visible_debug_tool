@@ -72,18 +72,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:ellipsize="end"
         android:ems="10"
         android:hint="@string/add_to_search_filter"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:singleLine="true"
-        android:ellipsize="end"
-        android:inputType="textPersonName"
-        android:textSize="13sp"
         android:textColor="@color/default_text_color"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintHorizontal_bias="0.575"
         app:layout_constraintStart_toEndOf="@+id/tv_filter_keyword"
-        app:layout_constraintTop_toBottomOf="@+id/sp_text_size"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/sp_text_size" />
 
     <ImageView
         android:id="@+id/iv_add_filter_keyword"

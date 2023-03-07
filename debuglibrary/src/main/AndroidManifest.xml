@@ -6,16 +6,23 @@
 
     <application>
         <activity
+            android:name="com.eddy.debuglibrary.presentation.view.ui.search.SearchActivity"
+            android:theme="@style/Theme.Search.Dialog"
+            android:exported="false">
+        </activity>
+
+        <activity
             android:name="com.eddy.debuglibrary.presentation.view.ui.setting.SettingActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
             android:name="com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity"
             android:exported="true"
-            android:theme="@style/Theme.Permission.Dialog"></activity>
+            android:theme="@style/Theme.Permission.Dialog" />
 
         <service
             android:name="com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService"

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.eddy.debuglibrary.presentation.view.model.LogUiModel
 import com.eddy.debuglibrary.presentation.view.ui.overlay.epoxy.LogController
+import com.eddy.debuglibrary.presentation.view.ui.search.SearchActivity
 import com.eddy.debuglibrary.presentation.view.ui.setting.SettingActivity
 import com.eddy.debuglibrary.presentation.view.ui.setting.SettingEvent
 import com.eddy.debuglibrary.util.Constants
@@ -50,10 +51,11 @@ internal class OverlayTaskView @JvmOverloads constructor(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             type,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         )
     }
+
 
     private var touchX = 0
     private var touchY = 0
@@ -74,10 +76,13 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val cbZoom: CheckBox by lazy { rootView.findViewById(R.id.cb_zoom) }
     private val spLog: Spinner by lazy { rootView.findViewById(R.id.sp_log) }
     private val ivTrashLog: ImageView by lazy { rootView.findViewById(R.id.iv_trash_log) }
+    private val ivSearch: ImageView by lazy { rootView.findViewById(R.id.iv_search) }
+    private val llSearchTool: LinearLayout by lazy { rootView.findViewById(R.id.ly_search_tool) }
+    private val ivUpBtn: ImageView by lazy { rootView.findViewById(R.id.iv_up) }
+    private val ivDownBtn: ImageView by lazy { rootView.findViewById(R.id.iv_down) }
     private val logController: LogController by lazy { LogController() }
+    private val tvSearchKeyword: TextView by lazy { rootView.findViewById(R.id.tv_search_keyword) }
     private val rvLog: EpoxyRecyclerView by lazy { rootView.findViewById(R.id.rv_logs) }
-
-    private var isSettingView: Boolean = false
 
     private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -98,10 +103,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
         if (isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
     }
 
-    fun searchLog(log: String) {
-
-    }
-
     fun init() {
         EventBus.getDefault().register(this@OverlayTaskView)
         setRv()
@@ -109,8 +110,23 @@ internal class OverlayTaskView @JvmOverloads constructor(
         getFilterKeywordList()
     }
 
-    fun setSettingView(isSettingView: Boolean) {
-        this.isSettingView = isSettingView
+    private var globalUiModels: List<IndexedValue<LogUiModel>>? = null
+    private var globalPosition = 0
+    private lateinit var globalKeyword: String
+
+    fun onSearchKeyword(keyword: String) {
+        try {
+            llSearchTool.isVisible = true
+            tvSearchKeyword.text = keyword
+
+            globalKeyword = keyword
+
+            globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(keyword) }
+            globalPosition = globalUiModels?.first()?.index ?: throw IllegalStateException("Not found.")
+            rvLog.smoothScrollToPosition(globalPosition)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Not found. Search Log", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun onCreateView() {
@@ -121,8 +137,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
                     R.color.default_app_color
                 )
             )
-        }
-        else rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent_gray))
+        } else rvLog.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent_gray))
         windowManager.addView(rootView, rootViewParams)
     }
 
@@ -146,13 +161,38 @@ internal class OverlayTaskView @JvmOverloads constructor(
             logController.setData(listOf())
         }
 
+        ivSearch.setOnClickListener {
+            val intent = Intent(context, SearchActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+
+        ivUpBtn.setOnClickListener {
+            try {
+                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalKeyword) }
+                globalPosition = globalUiModels?.findLast { it.index < globalPosition }?.index ?: throw IllegalStateException("Not found.")
+                rvLog.smoothScrollToPosition(globalPosition)
+            }catch (e: Exception) {
+                Toast.makeText(context, "The end has been reached.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        ivDownBtn.setOnClickListener {
+            try {
+                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalKeyword) }
+                globalPosition = globalUiModels?.find { it.index > globalPosition }?.index ?: throw IllegalStateException("Not found.")
+                rvLog.smoothScrollToPosition(globalPosition)
+            } catch (e: Exception) {
+                Toast.makeText(context, "The end has been reached.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         ivSetting.setOnClickListener {
             onDestroyView()
 
             val intent = Intent(context, SettingActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
-
         }
 
         ivMove.setOnTouchListener(viewMoveListener)
@@ -161,13 +201,13 @@ internal class OverlayTaskView @JvmOverloads constructor(
             callback.onClickClose.invoke()
         }
 
-        tvLog.setOnClickListener { if (isExpandView.not()) applyExpandView() }
-
-        rootView.setOnLongClickListener {
+        ivClose.setOnLongClickListener {
             EventBus.getDefault().unregister(this@OverlayTaskView)
             callback.onLongClickCloseService.invoke()
             true
         }
+
+        tvLog.setOnClickListener { if (isExpandView.not()) applyExpandView() }
 
         cbZoom.setOnClickListener {
             if (cbZoom.isChecked) {
@@ -188,6 +228,19 @@ internal class OverlayTaskView @JvmOverloads constructor(
         spLog.onItemSelectedListener = logSelectorListener
     }
 
+    private fun getFilterKeywordList() {
+        val stringPrefs = sharedPreferences.getString(EDDY_LOG_FILTER_KEYWORD, null)
+        var arrayListPrefs: List<String>
+        if (stringPrefs != null && stringPrefs != "[]") {
+            arrayListPrefs = GsonBuilder().create().fromJson(
+                stringPrefs, object : TypeToken<ArrayList<String>>() {}.type
+            )
+            logEvents = arrayListPrefs
+
+            spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
+        }
+    }
+
     private fun applyExpandView() {
         getFilterKeywordList()
         spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
@@ -205,10 +258,11 @@ internal class OverlayTaskView @JvmOverloads constructor(
         isExpandView = true
         ivClose.isVisible = true
         spLog.isVisible = true
-
         cbZoom.isVisible = true
         cbZoom.isChecked = false
         ivTrashLog.isVisible = true
+        ivSearch.isVisible = true
+
         tvLog.text = logEvents[0]
         spLog.setSelection(0)
 
@@ -220,20 +274,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
         callback.onClickTagItem.invoke("normal")
     }
 
-    private fun getFilterKeywordList(){
-        val stringPrefs = sharedPreferences.getString(EDDY_LOG_FILTER_KEYWORD, null)
-        var arrayListPrefs: List<String>
-        if(stringPrefs != null && stringPrefs != "[]"){
-            arrayListPrefs = GsonBuilder().create().fromJson(
-                stringPrefs, object: TypeToken<ArrayList<String>>(){}.type
-            )
-            logEvents = arrayListPrefs
-
-            spLog.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, logEvents)
-        }
-    }
-
-
     private fun applyCollapseView() {
         ivSetting.isVisible = false
         isExpandView = false
@@ -243,6 +283,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
         cbZoom.isVisible = false
         cbZoom.isChecked = true
         ivTrashLog.isVisible = false
+        ivSearch.isVisible = false
+        llSearchTool.isVisible = false
         tvLog.text = resources.getText(R.string.log)
         rvLog.removeAllViewsInLayout()
 

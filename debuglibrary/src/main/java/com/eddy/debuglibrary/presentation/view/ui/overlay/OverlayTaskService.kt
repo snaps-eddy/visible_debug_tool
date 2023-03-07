@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.lifecycle.Lifecycle
@@ -14,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.eddy.debuglibrary.di.AppContainer
 import com.eddy.debuglibrary.di.DiManager
-import com.eddy.debuglibrary.presentation.view.model.LogForm
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayContract
 import com.eddy.debuglibrary.presentation.viewmodel.OverlayTaskViewModel
 import com.eddy.debuglibrary.util.Constants
@@ -48,6 +48,13 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         saveFilterKeywordList()
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val searchKeyword = intent?.getStringExtra(SEARCH_KEYWORD) ?: ""
+
+        view.onSearchKeyword(searchKeyword)
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return binder
@@ -76,12 +83,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.effect.distinctUntilChanged().collect {
                     when (it) {
-                        is OverlayContract.SideEffect.FetchLogs -> {
-                            view.addLogTextView(it.logs)
-                        }
-                        is OverlayContract.SideEffect.SearchLog -> {
-                            view.searchLog(it.word)
-                        }
+                        is OverlayContract.SideEffect.FetchLogs -> view.addLogTextView(it.logs)
                     }
                 }
             }
@@ -90,17 +92,17 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
 
     private fun saveFilterKeywordList() {
         if(sharedPreferences.getString(Constants.SharedPreferences.EDDY_LOG_FILTER_KEYWORD, null) == null) {
-            var arrayListPrefs = ArrayList<String>() // 저장할 ArrayList
-            var stringPrefs : String? = null // 저장할 때 사용할 문자열 변수
-            // ArrayList에 추가
+            var arrayListPrefs = ArrayList<String>()
+            var stringPrefs : String? = null
+
             arrayListPrefs.add(0, "normal")
             stringPrefs = GsonBuilder().create().toJson(
                 arrayListPrefs,
                 object : TypeToken<ArrayList<String>>() {}.type
             )
             sharedPreferences.edit().apply {
-                putString(Constants.SharedPreferences.EDDY_LOG_FILTER_KEYWORD, stringPrefs) // SharedPreferences에 push
-                apply() // SharedPreferences 적용
+                putString(Constants.SharedPreferences.EDDY_LOG_FILTER_KEYWORD, stringPrefs)
+                apply()
             }
         }
     }
@@ -129,4 +131,8 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
     override val onClickTagItem: (tag: String) -> Unit = ::onClickTagItem
     override val onLongClickCloseService: () -> Unit = ::onLongClickCloseService
     override val onClickDelete: () -> Unit = ::onClickDelete
+
+    companion object {
+        const val SEARCH_KEYWORD = "Search Keyword"
+    }
 }

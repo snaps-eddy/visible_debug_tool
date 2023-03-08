@@ -271,6 +271,9 @@ internal class OverlayTaskView @JvmOverloads constructor(
         moveLayoutParams.addRule(RelativeLayout.LEFT_OF, ivClose.id)
         ivMove.layoutParams = moveLayoutParams
 
+        rootViewParams.width = WindowManager.LayoutParams.MATCH_PARENT
+        windowManager.updateViewLayout(rootView, rootViewParams)
+
         callback.onClickTagItem.invoke("normal")
     }
 
@@ -293,6 +296,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
         moveLayoutParams.addRule(RelativeLayout.RIGHT_OF, tvLog.id)
         ivMove.layoutParams = moveLayoutParams
 
+        rootViewParams.width = WindowManager.LayoutParams.WRAP_CONTENT
         windowManager.updateViewLayout(rootView, rootViewParams)
     }
 

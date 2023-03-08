@@ -3,7 +3,6 @@ package com.eddy.debuglibrary.presentation.view.ui.setting
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
@@ -11,8 +10,13 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eddy.debuglibrary.presentation.view.ui.setting.epoxy.LogKeywordController
+import com.eddy.debuglibrary.presentation.view.ui.setting.epoxy.LogKeywordModel
+import com.eddy.debuglibrary.presentation.view.ui.setting.viewmodel.SettingViewModel
 import com.eddy.debuglibrary.util.Constants
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_LOG_FILTER_KEYWORD
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_LOG_TEXT_SIZE
@@ -21,6 +25,8 @@ import com.example.debuglibrary.R
 import com.example.debuglibrary.databinding.ActivitySettingBinding
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 
@@ -32,6 +38,7 @@ internal class SettingActivity : AppCompatActivity() {
     }
 
     private val controller: LogKeywordController by lazy { LogKeywordController() }
+    private val viewModel: SettingViewModel by lazy { SettingViewModel() }
     private var arrayListPrefs = ArrayList<String>() // 저장할 ArrayList
     private var stringPrefs : String? = null // 저장할 때 사용할 문자열 변수
 
@@ -41,8 +48,34 @@ internal class SettingActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.setting)
         setContentView(binding.root)
 
-        initView()
+        initObservers()
+
     }
+
+    private fun initObservers() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    when (val state = it.state) {
+                        SettingContract.SettingState.Init -> {
+                            initView()
+                        }
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.distinctUntilChanged().collect { effect ->
+                    when (effect) {
+                        is SettingContract.SideEffect.DeleteKeyword -> deleteSearchKeyword(effect.keyword)
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun initView() {
         setupCheckbox()
@@ -84,7 +117,12 @@ internal class SettingActivity : AppCompatActivity() {
     private fun setupFilterKeywordList() {
         binding.rvFilterKeywordList.apply {
             setController(controller)
-            controller.setData(getFilterKeywordList())
+
+            val models = getFilterKeywordList().map {
+                LogKeywordModel(content = it, callback = viewModel)
+            }
+
+            controller.setData(models)
             layoutManager = LinearLayoutManager(context).apply {
                 orientation = LinearLayoutManager.VERTICAL
             }
@@ -120,7 +158,25 @@ internal class SettingActivity : AppCompatActivity() {
     }
 
     private fun setData() {
-        controller.setData(getFilterKeywordList())
+        val models = getFilterKeywordList().map {
+            LogKeywordModel(content = it, callback = viewModel)
+        }
+        controller.setData(models)
+    }
+
+    private fun deleteSearchKeyword(keyword: String) {
+
+        arrayListPrefs = getFilterKeywordList().toMutableList().also { it.remove(keyword)} as ArrayList<String>
+
+        stringPrefs = GsonBuilder().create().toJson(
+            arrayListPrefs,
+            object : TypeToken<ArrayList<String>>() {}.type
+        )
+        sharedPreferences.edit().apply {
+            putString(EDDY_LOG_FILTER_KEYWORD, stringPrefs)
+            apply()
+        }
+        setData()
     }
 
     private fun setupFilterTextView() {
@@ -135,6 +191,10 @@ internal class SettingActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    interface Callback {
+        val onClickDeleteKeyword: (keyword: String) -> Unit
     }
 
     override fun onBackPressed() {

@@ -1,5 +1,6 @@
 package com.eddy.debuglibrary
 
+import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,7 +27,6 @@ class DebugTool private constructor(
 ) {
 
     private lateinit var myService: OverlayTaskService
-    private var isService = false
 
     private val sharedPreferences = context.getSharedPreferences(Constants.SharedPreferences.EDDY_DEBUG_TOOL, Context.MODE_PRIVATE)
 
@@ -51,15 +51,16 @@ class DebugTool private constructor(
     private val permissionEventManager by lazy { PermissionEventManager(permissionCallback) }
 
     fun bindService() {
-        if (getPermission()) {
-            startService()
-        }
+        if (getPermission()) startService()
+
     }
 
     fun unbindService() {
-        if (isService) {
-            context.unbindService(connection)
-        }
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val services = manager.getRunningServices(Integer.MAX_VALUE)
+
+        val isMyServiceRunning = services.any { it.service.className == OverlayTaskService::class.java.name }
+        if (isMyServiceRunning)  context.unbindService(connection)
     }
 
     private fun startService() {
@@ -95,15 +96,12 @@ class DebugTool private constructor(
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder = service as OverlayTaskService.OverlayDebugToolPopUpBinder
-            isService = true
 
             myService = binder.getService()
             myService.setUnBindServiceCallback(::unbindService)
         }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-            isService = false
-        }
+        override fun onServiceDisconnected(name: ComponentName) {}
     }
 
     public class Builder(private val context: Context) {

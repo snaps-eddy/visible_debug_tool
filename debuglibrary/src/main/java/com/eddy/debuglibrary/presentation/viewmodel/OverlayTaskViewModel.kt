@@ -1,6 +1,5 @@
 package com.eddy.debuglibrary.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.eddy.debuglibrary.domain.log.usecase.ClearLogUseCase
 import com.eddy.debuglibrary.domain.log.usecase.DeleteLogUseCase

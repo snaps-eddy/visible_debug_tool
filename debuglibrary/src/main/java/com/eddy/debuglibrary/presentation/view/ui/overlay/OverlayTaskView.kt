@@ -8,6 +8,7 @@ import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.*
@@ -100,7 +101,9 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
     fun addLogTextView(log: List<LogUiModel>) {
         logController.setData(log)
-        if (isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
+        logController.adapter.itemCount.takeIf { it > 0 }?.let {
+            if (isScrollBottom) rvLog.smoothScrollToPosition(log.size - 1)
+        }
     }
 
     fun init() {
@@ -121,7 +124,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
             globalKeyword = keyword
 
-            globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(keyword) }
+            globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(keyword, true) }
             globalPosition = globalUiModels?.first()?.index ?: throw IllegalStateException("Not found.")
             rvLog.smoothScrollToPosition(globalPosition)
         } catch (e: Exception) {

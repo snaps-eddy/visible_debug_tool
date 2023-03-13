@@ -24,10 +24,18 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             var i = 0
 
-            while (i < 10) {
+            while (i < 5) {
                 Log.d("test","eddy test \neddy test \neddy test\n eddy testn\neddy test\neddy test\neddy test\neddy test\n eddy test")
                 i++
                 Thread.sleep(1500)
+            }
+
+
+            try {
+                val ss = emptyList<String>()
+                val dd = ss.first()
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -35,6 +43,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity2::class.java))
             finish()
         }
+
+
 
         val dd = createDebugTool(context = applicationContext) {
             setAutoPermissionCheck(true)

@@ -51,7 +51,6 @@ class DebugTool private constructor(
 
     private val permissionEventManager by lazy { PermissionEventManager(permissionCallback) }
 
-    @RequiresPermission(Manifest.permission.SYSTEM_ALERT_WINDOW)
     fun bindService() {
         if (getPermission()) {
             startService()

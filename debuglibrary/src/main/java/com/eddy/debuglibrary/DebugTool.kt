@@ -1,18 +1,17 @@
 package com.eddy.debuglibrary
 
-import android.Manifest
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.IBinder
 import android.provider.Settings
 import android.widget.Toast
-import androidx.annotation.RequiresPermission
 import com.eddy.debuglibrary.presentation.view.ui.overlay.OverlayTaskService
 import com.eddy.debuglibrary.presentation.view.ui.permission.PermissionActivity
 import com.eddy.debuglibrary.util.Constants
 import com.eddy.debuglibrary.util.Constants.SharedPreferences.Companion.EDDY_DEBUG_TOOL_BOOLEAN_TOKEN
 import com.eddy.debuglibrary.util.PermissionEventManager
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import org.greenrobot.eventbus.EventBus
 
 @JvmSynthetic

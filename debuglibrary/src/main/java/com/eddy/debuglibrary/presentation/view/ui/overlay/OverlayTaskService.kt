@@ -127,6 +127,11 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
         viewModel.setEvent(OverlayContract.Event.DeleteLog)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        stopSelf()
+    }
+
     override val onClickClose: () -> Unit = ::onClickClose
     override val onClickTagItem: (tag: String) -> Unit = ::onClickTagItem
     override val onLongClickCloseService: () -> Unit = ::onLongClickCloseService

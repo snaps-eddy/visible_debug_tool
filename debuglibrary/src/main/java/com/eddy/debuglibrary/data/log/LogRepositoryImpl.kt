@@ -7,7 +7,10 @@ import com.eddy.debuglibrary.domain.log.LogRepository
 import com.eddy.debuglibrary.domain.log.model.LogLevel
 import com.eddy.debuglibrary.domain.log.model.LogModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
 internal class LogRepositoryImpl(
     private val remote: LogRemoteDataSource,
@@ -24,8 +27,6 @@ internal class LogRepositoryImpl(
 
     override fun getLogcatData(filterWord: String): Flow<List<LogModel>> {
         return remote.logDataCollect()
-            .filterNot { exceptChar.any { char -> it.contains(char) } }
-            .filter { it.contains(filterWord) }
             .map {
                 when {
                     it.contains(LogLevel.V.containWord) -> { LogEntity(content = it, level = LogLevel.V.containWord) }
@@ -40,20 +41,21 @@ internal class LogRepositoryImpl(
             }.map { local.insertLog(it) }
             .flatMapConcat { local.getAllLog() }
             .map {
-                it.map {
-                    when {
-                        it.level.contains(LogLevel.V.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.V) }
-                        it.level.contains(LogLevel.D.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.D) }
-                        it.level.contains(LogLevel.I.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.I) }
-                        it.level.contains(LogLevel.W.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.W) }
-                        it.level.contains(LogLevel.E.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.E) }
-                        it.level.contains(LogLevel.F.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.F) }
-                        it.level.contains(LogLevel.S.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.S) }
-                        else -> { LogModel(content = it.content, logLevel = LogLevel.E) }
+                it.filter { it.content.isNotBlank() && it.content.contains(filterWord, true) }
+                    .filterNot { exceptChar.any { char -> it.content.contains(char, true) } }
+                    .map {
+                        when {
+                            it.level.contains(LogLevel.V.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.V) }
+                            it.level.contains(LogLevel.D.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.D) }
+                            it.level.contains(LogLevel.I.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.I) }
+                            it.level.contains(LogLevel.W.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.W) }
+                            it.level.contains(LogLevel.E.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.E) }
+                            it.level.contains(LogLevel.F.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.F) }
+                            it.level.contains(LogLevel.S.containWord) -> { LogModel(content = it.content, logLevel = LogLevel.S) }
+                            else -> { LogModel(content = it.content, logLevel = LogLevel.E) }
+                        }
                     }
-                }
-            }
-            .flowOn(Dispatchers.IO)
+            }.flowOn(Dispatchers.IO)
     }
 
 

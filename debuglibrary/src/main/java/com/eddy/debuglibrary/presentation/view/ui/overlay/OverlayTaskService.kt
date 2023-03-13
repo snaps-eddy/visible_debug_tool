@@ -129,6 +129,7 @@ internal class OverlayTaskService : LifecycleService(), OverlayTaskCallback {
 
     override fun onDestroy() {
         super.onDestroy()
+        view.onDestroyView()
         stopSelf()
     }
 

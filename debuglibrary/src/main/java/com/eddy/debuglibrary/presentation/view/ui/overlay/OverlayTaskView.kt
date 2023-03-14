@@ -84,8 +84,14 @@ internal class OverlayTaskView @JvmOverloads constructor(
     private val tvSearchKeyword: TextView by lazy { rootView.findViewById(R.id.tv_search_keyword) }
     private val rvLog: EpoxyRecyclerView by lazy { rootView.findViewById(R.id.rv_logs) }
 
+    private var globalUiModels: List<IndexedValue<LogUiModel>>? = null
+    private var globalPosition = 0
+    private lateinit var globalSearchKeyword: String
+    private lateinit var globalCurrentKeyword: String
+
     private val logSelectorListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            globalCurrentKeyword = logEvents[position]
             tvLog.text = logEvents[position]
             callback.onClickTagItem.invoke(logEvents[position])
             rvLog.removeAllViewsInLayout()
@@ -112,16 +118,12 @@ internal class OverlayTaskView @JvmOverloads constructor(
         getFilterKeywordList()
     }
 
-    private var globalUiModels: List<IndexedValue<LogUiModel>>? = null
-    private var globalPosition = 0
-    private lateinit var globalKeyword: String
-
     fun onSearchKeyword(keyword: String) {
         try {
             llSearchTool.isVisible = true
             tvSearchKeyword.text = keyword
 
-            globalKeyword = keyword
+            globalSearchKeyword = keyword
 
             globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(keyword, true) }
             globalPosition = globalUiModels?.first()?.index ?: throw IllegalStateException("Not found.")
@@ -171,7 +173,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
         ivUpBtn.setOnClickListener {
             try {
-                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalKeyword) }
+                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalSearchKeyword) }
                 globalPosition = globalUiModels?.findLast { it.index < globalPosition }?.index ?: throw IllegalStateException("Not found.")
                 rvLog.smoothScrollToPosition(globalPosition)
             }catch (e: Exception) {
@@ -182,7 +184,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
 
         ivDownBtn.setOnClickListener {
             try {
-                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalKeyword) }
+                globalUiModels = logController.currentData?.withIndex()?.filter { it.value.content.contains(globalSearchKeyword) }
                 globalPosition = globalUiModels?.find { it.index > globalPosition }?.index ?: throw IllegalStateException("Not found.")
                 rvLog.smoothScrollToPosition(globalPosition)
             } catch (e: Exception) {
@@ -331,9 +333,8 @@ internal class OverlayTaskView @JvmOverloads constructor(
             SettingEvent.OnBackPress -> {
                 onCreateView()
                 getFilterKeywordList()
+                callback.onClickTagItem.invoke(globalCurrentKeyword)
             }
         }
     }
-
-
 }

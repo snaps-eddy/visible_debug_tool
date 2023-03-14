@@ -8,7 +8,6 @@ import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.*
@@ -176,6 +175,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 globalPosition = globalUiModels?.findLast { it.index < globalPosition }?.index ?: throw IllegalStateException("Not found.")
                 rvLog.smoothScrollToPosition(globalPosition)
             }catch (e: Exception) {
+                rvLog.smoothScrollToPosition(globalPosition)
                 Toast.makeText(context, "The end has been reached.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -186,6 +186,7 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 globalPosition = globalUiModels?.find { it.index > globalPosition }?.index ?: throw IllegalStateException("Not found.")
                 rvLog.smoothScrollToPosition(globalPosition)
             } catch (e: Exception) {
+                rvLog.smoothScrollToPosition(globalPosition)
                 Toast.makeText(context, "The end has been reached.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -254,7 +255,6 @@ internal class OverlayTaskView @JvmOverloads constructor(
                 height = ((Resources.getSystem().displayMetrics.heightPixels / screenRatio))
             }
             isVisible = true
-
         }
 
         ivSetting.isVisible = true
